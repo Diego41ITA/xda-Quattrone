@@ -153,6 +153,9 @@ class AnchorsPlanner:
         self.delta = delta
         self.targetConfidence = targetConfidence
 
+        self.merged_polytopes = {}
+
+
         # train a k nearest neighbors classifier only used to find the neighbors of a sample in the dataset
         knn = KNeighborsClassifier()
         knn.fit(X.values, np.zeros((X.shape[0],)))
@@ -161,8 +164,30 @@ class AnchorsPlanner:
         datasets = []
         features_to_use = [i for i in range(feature_number)]
 
+        # make pdps
+        self.pdps = {}
+        for i, feature in enumerate(controllableFeaturesNames):
+            self.pdps[i] = []
+            for j, reqClassifier in enumerate(reqClassifiers):
+                path = None
+                if plotsPath is not None:
+                    path = plotsPath + "/req_" + str(j)
+                    if not os.path.exists(path):
+                        os.makedirs(path)
+                self.pdps[i].append(pdp.partialDependencePlot(reqClassifier, X, [feature], "both", path + "/" + feature + ".png"))
+
+        # make summary pdps
+        self.summaryPdps = []
+        for i, feature in enumerate(controllableFeaturesNames):
+            path = None
+            if plotsPath is not None:
+                path = plotsPath + "/summary"
+                if not os.path.exists(path):
+                    os.makedirs(path)
+            self.summaryPdps.append(pdp.multiplyPdps(self.pdps[i], path + "/" + feature + ".png"))
+
         #Creates one dataset for each requirement
-        for i,r in enumerate(self.reqNames):
+        for i,r in enumerate(reqNames):
             datasets.append(\
                 utils.load_csv_dataset(\
                     training_dataset, feature_number+i,\
@@ -170,7 +195,7 @@ class AnchorsPlanner:
                     categorical_features=None))
 
         self.explainer = []
-        req_number = len(self.reqNames)
+        req_number = len(reqNames)
 
         for i in range(req_number):
             #initialize the explainer
@@ -184,9 +209,11 @@ class AnchorsPlanner:
         K = 2 
         pred_matrix = np.zeros((n_samples, req_number), dtype=int)
         for i in range(req_number):
-            pred_matrix[:, i] = self.reqClassifiers[i].predict(datasets[i].train)
+            pred_matrix[:, i] = reqClassifiers[i].predict(datasets[i].train)
 
         selected_samples = np.where(pred_matrix.sum(axis=1) >= K)[0]
+
+        explanations = []
         sample_to_rules = {}
 
         print("Starting anchor generation for", len(selected_samples), "samples satisfying at least", K, "requirements.")
@@ -212,7 +239,7 @@ class AnchorsPlanner:
                         intersected_exp[quoted] = self.__intersect(intersected_exp[quoted], self.__parse_range(rest))
 
             #prepare the data structure
-            self.explanations.append(intersected_exp)
+            explanations.append(intersected_exp)
             sample_to_rules[p_sample] = textual_rules
 
         time_taken = time.time() - start_time
@@ -220,14 +247,14 @@ class AnchorsPlanner:
 
         missing = 0
         explanations_reordered = []
-        for exp in self.explanations:
+        for exp in explanations:
             exp_reordered = {}
             for k in feature_names:
                 if k in exp:
                     exp_reordered[k] = exp[k]
                 else:
                     exp_reordered[k] = (-inf, inf, False, False)
-                    index = self.explanations.index(exp)
+                    index = explanations.index(exp)
                     missing = 1
             if missing:
                 missing = 0
@@ -240,7 +267,7 @@ class AnchorsPlanner:
         coefficients_to_remove = []
         for n in range(number_of_explanations):
             single_anchor_mean = np.zeros((1, 4))
-            single_anchor = self.explanations[n]
+            single_anchor = explanations[n]
             
             for i in range(number_of_random_points):
                 random_sample = np.zeros((1, feature_number))   
@@ -271,8 +298,8 @@ class AnchorsPlanner:
         req_confidences_sum /= number_of_explanations * number_of_random_points
 
         # Remove anchors with average probabilities below 0.5
-        explanations_removed_negatives = [self.explanations[i] for i in range(len(self.explanations)) if i not in coefficients_to_remove]
-        self.explanations = explanations_removed_negatives
+        explanations_removed_negatives = [explanations[i] for i in range(len(explanations)) if i not in coefficients_to_remove]
+        explanations = explanations_removed_negatives
 
         csv_data = []
 
@@ -283,6 +310,7 @@ class AnchorsPlanner:
                 "n_satisfied_reqs": int(pred_matrix[sample_index].sum())
             }
 
+            # (opzionale ma consigliato)
             for i, req in enumerate(reqNames):
                 row[f"pred_{req}"] = int(pred_matrix[sample_index, i])
                 row[f"real_{req}"] = int(datasets[i].labels_train[sample_index])

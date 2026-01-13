@@ -14,7 +14,7 @@ from model.ModelConstructor import constructModel
 import explainability_techniques.LIME as lime
 from CustomPlanner import CustomPlanner
 from NSGA3Planner import NSGA3Planner
-from WIP_copy import AnchorsPlanner
+from WIP import AnchorsPlanner
 from util import vecPredictProba, evaluateAdaptations
 
 
@@ -155,7 +155,7 @@ if __name__ == '__main__':
     for f in files:
         os.remove(f)
 
-    testNum = 1
+    testNum = 10
     for k in range(1, testNum + 1):
         
         rowIndex = k - 1
