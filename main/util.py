@@ -42,15 +42,19 @@ def evaluateDataset(dataset, name):
     # i = 1
     # while os.path.exists(new_file):
     #     new_file = './results/' + name + "(" + i + ")" + '.csv'
-    os.rename(source_file, new_file)
+    
+    
+    #os.rename(source_file, new_file)
 
 
 def evaluateAdaptations(dataset, featureNames):
 
     customAdaptations = pd.DataFrame(dataset['custom_adaptation'].to_list(), columns=featureNames)
+    customAdaptations2 = pd.DataFrame(dataset['custom2_adaptation'].to_list(), columns=featureNames)
     nsga3Adaptations = pd.DataFrame(dataset['nsga3_adaptation'].to_list(), columns=featureNames)
 
     evaluateDataset(customAdaptations, "customDataset")
+    evaluateDataset(customAdaptations2, "customDataset2")
     evaluateDataset(nsga3Adaptations, "nsga3Dataset")
 
 

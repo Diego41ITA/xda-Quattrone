@@ -30,10 +30,10 @@ def personalizedBoxPlot(data, name, columnNames=None, percentage=False, path=Non
                  patch_artist=True, notch=True, vert=True)
 
 
-    colors = plt.cm.Spectral(np.linspace(.1, .9, 3))
+    colors = plt.cm.Spectral(np.linspace(.1, .9, 5))
     # colors = np.append(colors[0::2], colors[1::2], axis=0)
     c = np.copy(colors)
-    for i in range(nColumns//3):
+    for i in range(nColumns//5):
         c = np.append(c, colors, axis=0)
 
     colors = c
@@ -71,7 +71,7 @@ def personalizedBoxPlot(data, name, columnNames=None, percentage=False, path=Non
     # x-axis labels
     if columnNames is not None and len(columnNames) > 0:
         nGroups = len(columnNames)
-        groupSize = 3  # you have 3 algorithms: NSGA-III, XDA, Anchors
+        groupSize = 5  # you have 5 algorithms: NSGA-III, XDA, Anchors, Anchors (331-660), Anchors (661-1000)
         positions = np.arange(1, nGroups * groupSize + 1)  # 1..12 for 4 groups
         centers = [np.mean(positions[i*groupSize:(i+1)*groupSize]) for i in range(nGroups)]
         ax1.set_xticks(centers)
@@ -96,9 +96,9 @@ def personalizedBoxPlot(data, name, columnNames=None, percentage=False, path=Non
     ax1.set_position([box.x0, box.y0 + box.height * 0.1,
                      box.width, box.height * 0.9])
     if legendInside:
-        ax1.legend([bp["boxes"][0], bp["boxes"][1], bp["boxes"][2]], ["NSGA-III", "XDA", "Anchors"],)
+        ax1.legend([bp["boxes"][0], bp["boxes"][1], bp["boxes"][2], bp["boxes"][3], bp["boxes"][4]], ["NSGA-III", "XDA", "Anchors(0-330)", "Anchors (331-660)", "Anchors (661-1000)"],)
     else:
-        ax1.legend([bp["boxes"][0], bp["boxes"][1], bp["boxes"][2]], ["NSGA-III", "XDA", "Anchors"],
+        ax1.legend([bp["boxes"][0], bp["boxes"][1], bp["boxes"][2], bp["boxes"][3], bp["boxes"][4]], ["NSGA-III", "XDA", "Anchors(0-330)", "Anchors (331-660)", "Anchors (661-1000)"],
                    ncol=3, loc='upper center', bbox_to_anchor=(0.5, -0.1))
 
     # Adding title
@@ -190,7 +190,7 @@ reqs = ["req_0", "req_1", "req_2", "req_3"]
 reqsNamesInGraphs = ["R1", "R2", "R3", "R4"]
 
 # read dataframe from csv
-results = readFromCsv(pathToResults + 'results_new.csv')
+results = readFromCsv(pathToResults + 'results_15000.csv')
 nReqs = len(results["nsga3_confidence"][0])
 reqs = reqs[:nReqs]
 reqsNamesInGraphs = reqsNamesInGraphs[:nReqs]
@@ -226,15 +226,57 @@ customConfidences = pd.DataFrame(results['custom_confidence'].to_list(),
                                  columns=customConfidenceNames)
 anchorsConfidences = pd.DataFrame(results['anchors_confidence'].to_list(),
                                   columns=anchorsConfidenceNames)
+anchorsIterations = results['iterations_anchors']
+anchorsConfidences0_330 = []
+anchorsConfidences331_660 = []
+anchorsConfidences661_1000 = []
+# Create masks for each iteration range
+mask_0_330 = anchorsIterations <= 330
+mask_331_660 = (anchorsIterations > 330) & (anchorsIterations <= 660)
+mask_661_1000 = anchorsIterations > 660
+
+# Use masks to select rows, fill others with NaN
+anchorsConfidences0_330 = anchorsConfidences.where(mask_0_330, np.nan)
+anchorsConfidences331_660 = anchorsConfidences.where(mask_331_660, np.nan)
+anchorsConfidences661_1000 = anchorsConfidences.where(mask_661_1000, np.nan)
+
 
 # select sub-dataframes to plot
-confidences = pd.concat([nsga3Confidences, customConfidences, anchorsConfidences], axis=1)
-confidences = confidences[list(sum(zip(nsga3Confidences.columns, customConfidences.columns, anchorsConfidences.columns), ()))]
-scores = results[["nsga3_score", "custom_score", "anchors_score"]]
-times = results[["nsga3_time", "custom_time", "anchors_time"]]
+# First, rename the anchors columns to distinguish between different iteration ranges
+anchorsConfidences0_330_renamed = anchorsConfidences0_330.copy()
+anchorsConfidences331_660_renamed = anchorsConfidences331_660.copy()
+anchorsConfidences661_1000_renamed = anchorsConfidences661_1000.copy()
+
+# Rename columns to distinguish iteration ranges
+anchorsConfidences0_330_renamed.columns = [col.replace('anchors_confidence_', 'anchors_0_330_confidence_') for col in anchorsConfidences0_330_renamed.columns]
+anchorsConfidences331_660_renamed.columns = [col.replace('anchors_confidence_', 'anchors_331_660_confidence_') for col in anchorsConfidences331_660_renamed.columns]
+anchorsConfidences661_1000_renamed.columns = [col.replace('anchors_confidence_', 'anchors_661_1000_confidence_') for col in anchorsConfidences661_1000_renamed.columns]
+
+confidences = pd.concat([nsga3Confidences, customConfidences, anchorsConfidences0_330_renamed, anchorsConfidences331_660_renamed, anchorsConfidences661_1000_renamed], axis=1)
+
+# Reorder columns to group by requirement
+reordered_columns = []
+for req in reqs:
+    reordered_columns.extend([
+        f'nsga3_confidence_{req}',
+        f'custom_confidence_{req}',
+        f'anchors_0_330_confidence_{req}',
+        f'anchors_331_660_confidence_{req}',
+        f'anchors_661_1000_confidence_{req}'
+    ])
+
+confidences = confidences[reordered_columns]
+anchors_score_0_330 = results["anchors_score"].where(mask_0_330, np.nan).to_frame('anchors_0_330_score')
+anchors_score_331_660 = results["anchors_score"].where(mask_331_660, np.nan).to_frame('anchors_331_660_score')
+anchors_score_661_1000 = results["anchors_score"].where(mask_661_1000, np.nan).to_frame('anchors_661_1000_score')
+scores = pd.concat([results[["nsga3_score", "custom_score"]], anchors_score_0_330, anchors_score_331_660, anchors_score_661_1000], axis=1)
+anchorsTimes0_330 = results["anchors_time"].where(mask_0_330, np.nan).to_frame('anchors_0_330_time')
+anchorsTimes331_660 = results["anchors_time"].where(mask_331_660, np.nan).to_frame('anchors_331_660_time')
+anchorsTimes661_1000 = results["anchors_time"].where(mask_661_1000, np.nan).to_frame('anchors_661_1000_time')
+times = pd.concat([results[["nsga3_time", "custom_time"]], anchorsTimes0_330, anchorsTimes331_660, anchorsTimes661_1000], axis=1)
 
 # plots
-plotPath = pathToResults + 'plots/'
+plotPath = pathToResults + 'plots_15000_4req_0.8/'
 if not os.path.exists(plotPath):
     os.makedirs(plotPath)
 
@@ -245,7 +287,8 @@ personalizedBoxPlot(times, "Execution time comparison", path=plotPath, seconds=T
 # predicted successful adaptations
 nsga3PredictedSuccessful = (confidences[nsga3ConfidenceNames] > targetConfidence).all(axis=1)
 customPredictedSuccessful = (confidences[customConfidenceNames] > targetConfidence).all(axis=1)
-anchorsPredictedSuccessful = (confidences[anchorsConfidenceNames] > targetConfidence).all(axis=1)
+# Use the original anchorsConfidences DataFrame for this calculation since we need all anchors data together
+anchorsPredictedSuccessful = (anchorsConfidences > targetConfidence).all(axis=1)
 
 personalizedBoxPlot(confidences[nsga3PredictedSuccessful], "Confidences comparison on NSGA-III predicted success", reqsNamesInGraphs, path=plotPath, percentage=False)
 personalizedBoxPlot(scores[nsga3PredictedSuccessful], "Score comparison on NSGA-III predicted success", path=plotPath)
@@ -293,41 +336,3 @@ successRateOfPredictedSuccess = pd.DataFrame([[outcomes[nsga3OutcomeNames][nsga3
                                                outcomes[anchorsOutcomeNames][anchorsPredictedSuccessful].all(axis=1).mean()]],
                                              columns=["NSGA-III", "XDA", "Anchors"])
 personalizedBarChart(successRateOfPredictedSuccess, "Success Rate of Predicted Success", plotPath)
-
-
-iterations_per_sample = results["iterations_anchors"]
-preds_anch = results["anchors_confidence"]
-
-df_iterations = pd.DataFrame()
-df_iterations["iterations_anchors"] = iterations_per_sample
-df_iterations["anchors_confidence"] = preds_anch
-
-
-df_it = pd.DataFrame(df_iterations)
-
-# # Convert list column to numpy arrays for easier computation
-# df_it['anchors_confidence'] = df_it['anchors_confidence'].apply(np.array)
-
-# # Group by 'iterations_anchors' and compute mean vector
-# grouped = df_it.groupby('iterations_anchors')['anchors_confidence'].apply(lambda x: np.mean(np.stack(x), axis=0))
-
-# # Convert the result to a dataframe where each column is a unique iteration
-# final_df = pd.DataFrame(grouped.tolist(), index=grouped.index).T
-# final_df.columns = [f'Iter {col}' for col in final_df.columns]
-# print(final_df.head())
-
-
-
-# Convert to numpy arrays
-df_it['anchors_confidence'] = df_it['anchors_confidence'].apply(np.array)
-
-# Group by 'iterations_anchors' and compute mean vector
-grouped = df_it.groupby('iterations_anchors')['anchors_confidence'].apply(lambda x: np.mean(np.stack(x), axis=0))
-
-# Convert to a dataframe: each column = unique iteration, each row = vector element
-final_df = pd.DataFrame({k: v for k, v in grouped.items()}).T[0]
-
-
-print(final_df.head())
-personalizedBarChart(final_df, "Anchors Predicted Success w.r.t. it.", plotPath)
-
