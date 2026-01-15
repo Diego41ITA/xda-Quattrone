@@ -21,7 +21,7 @@ from typing import Optional, Tuple
 import itertools
 import time
 
-class AnchorsPlanner:
+class WIPPlanner:
     """
     A planner that generates, analyzes, and filters *anchor-based explanations* 
     for a set of requirement classifiers applied to a training dataset.
@@ -69,7 +69,8 @@ class AnchorsPlanner:
                  anchorsConfidence, feature_number, feature_names,
                  controllableFeaturesNames, X, plotsPath,
                  controllableFeatureIndices, controllableFeatureDomains,
-                 optimizationDirections, optimizationScoreFunction, delta, targetConfidence):
+                 optimizationDirections, optimizationScoreFunction, delta, targetConfidence, build_explanations,
+                 explanations_csv):
         """
         Initializes the AnchorsPlanner by training requirement explainers, 
         generating anchor-based explanations, and filtering them by confidence.
@@ -153,99 +154,141 @@ class AnchorsPlanner:
         self.delta = delta
         self.targetConfidence = targetConfidence
 
-        self.merged_polytopes = {}
+        self.explainer = []
+        self.explanations = []
 
 
-        # train a k nearest neighbors classifier only used to find the neighbors of a sample in the dataset
-        knn = KNeighborsClassifier()
-        knn.fit(X.values, np.zeros((X.shape[0],)))
-        self.knn = knn
+        # --------------------------------------------------
+        # KNN (used only to retrieve neighbors)
+        # --------------------------------------------------
+        self.knn = KNeighborsClassifier()
+        self.knn.fit(X.values, np.zeros(X.shape[0]))
 
-        datasets = []
-        features_to_use = [i for i in range(feature_number)]
-
-        # make pdps
+        # --------------------------------------------------
+        # PARTIAL DEPENDENCE PLOTS
+        # --------------------------------------------------
         self.pdps = {}
         for i, feature in enumerate(controllableFeaturesNames):
             self.pdps[i] = []
-            for j, reqClassifier in enumerate(reqClassifiers):
+            for j, clf in enumerate(reqClassifiers):
                 path = None
                 if plotsPath is not None:
-                    path = plotsPath + "/req_" + str(j)
-                    if not os.path.exists(path):
-                        os.makedirs(path)
-                self.pdps[i].append(pdp.partialDependencePlot(reqClassifier, X, [feature], "both", path + "/" + feature + ".png"))
+                    path = f"{plotsPath}/req_{j}"
+                    os.makedirs(path, exist_ok=True)
+                self.pdps[i].append(
+                    pdp.partialDependencePlot(
+                        clf, X, [feature], "both", f"{path}/{feature}.png"
+                    )
+                )
 
-        # make summary pdps
         self.summaryPdps = []
         for i, feature in enumerate(controllableFeaturesNames):
             path = None
             if plotsPath is not None:
-                path = plotsPath + "/summary"
-                if not os.path.exists(path):
-                    os.makedirs(path)
-            self.summaryPdps.append(pdp.multiplyPdps(self.pdps[i], path + "/" + feature + ".png"))
+                path = f"{plotsPath}/summary"
+                os.makedirs(path, exist_ok=True)
+            self.summaryPdps.append(
+                pdp.multiplyPdps(self.pdps[i], f"{path}/{feature}.png")
+            )
+        
+        # Build or load anchor explanations
+        if build_explanations:
+            self._build_anchor_explanations(
+                training_dataset,
+                reqClassifiers,
+                reqNames,
+                feature_number,
+                feature_names,
+            )
+        else:
+            self._load_anchor_explanations(explanations_csv)
 
-        #Creates one dataset for each requirement
-        for i,r in enumerate(reqNames):
-            datasets.append(\
-                utils.load_csv_dataset(\
-                    training_dataset, feature_number+i,\
-                    features_to_use=features_to_use,\
-                    categorical_features=None))
+    def _build_anchor_explanations(
+    self,
+    training_dataset,
+    reqClassifiers,
+    reqNames,
+    feature_number,
+    feature_names,
+    ):
+        """
+        Generates anchor explanations for the training dataset, intersects them across requirements,
+        reorders them according to feature_names, filters by confidence, and writes CSV outputs.
 
+        Populates:
+            - self.explanations
+        """
+
+        # Step 1: Load datasets for each requirement
+        datasets = []
+        features_to_use = list(range(feature_number))
+        for i, req in enumerate(reqNames):
+            datasets.append(
+                utils.load_csv_dataset(
+                    training_dataset,
+                    feature_number + i,
+                    features_to_use=features_to_use,
+                    categorical_features=None
+                )
+            )
+
+        # Step 2: Initialize AnchorTabularExplainer for each requirement
         self.explainer = []
-        req_number = len(reqNames)
+        for i in range(len(reqNames)):
+            self.explainer.append(
+                anchor_tabular.AnchorTabularExplainer(
+                    datasets[i].class_names,
+                    datasets[i].feature_names,
+                    datasets[i].train,
+                    datasets[i].categorical_names
+                )
+            )
 
-        for i in range(req_number):
-            #initialize the explainer
-            self.explainer.append(anchor_tabular.AnchorTabularExplainer(
-                datasets[i].class_names, #it maps the 0 and 1 in the dataset's requirements to the class names
-                datasets[i].feature_names,
-                datasets[i].train,
-                datasets[i].categorical_names))
-            
+        # Step 3: Select samples that satisfy at least K requirements
         n_samples = datasets[0].train.shape[0]
-        K = 2 
-        pred_matrix = np.zeros((n_samples, req_number), dtype=int)
-        for i in range(req_number):
+        K = 2  # minimum requirements to consider
+        pred_matrix = np.zeros((n_samples, len(reqNames)), dtype=int)
+        for i in range(len(reqNames)):
             pred_matrix[:, i] = reqClassifiers[i].predict(datasets[i].train)
 
         selected_samples = np.where(pred_matrix.sum(axis=1) >= K)[0]
 
+        # Step 4: Generate and intersect anchor explanations
         explanations = []
         sample_to_rules = {}
 
         print("Starting anchor generation for", len(selected_samples), "samples satisfying at least", K, "requirements.")
         start_time = time.time()
+
         for p_sample in selected_samples:
             intersected_exp = {}
             textual_rules = []
 
-            for i in range(req_number):
-                #get the sample
+            for i in range(len(reqNames)):
                 sample = datasets[i].train[p_sample]
-                #explain the sample
-                exp = self.explainer[i].explain_instance(sample, self.reqClassifiers[i].predict, threshold=0.95)
-                #get the textual explanation
+                # Explain the sample
+                exp = self.explainer[i].explain_instance(
+                    sample, self.reqClassifiers[i].predict, threshold=self.anchorsConfidence
+                )
+                # Get textual rules
                 exp = exp.names()
                 textual_rules.extend(exp)
-                #transform the textual explanations in an interval
+                # Convert textual rules to numeric intervals
                 for boundings in exp:
-                    quoted, rest = self.__get_anchor(boundings)            
-                    if(quoted not in intersected_exp):
-                        intersected_exp[quoted] = self.__parse_range(rest)
+                    quoted, rest = self.__get_anchor(boundings)
+                    interval = self.__parse_range(rest)
+                    if quoted not in intersected_exp:
+                        intersected_exp[quoted] = interval
                     else:
-                        intersected_exp[quoted] = self.__intersect(intersected_exp[quoted], self.__parse_range(rest))
+                        intersected_exp[quoted] = self.__intersect(intersected_exp[quoted], interval)
 
-            #prepare the data structure
             explanations.append(intersected_exp)
             sample_to_rules[p_sample] = textual_rules
 
         time_taken = time.time() - start_time
         print("Anchor generation completed in %.2f seconds." % time_taken)
 
-        missing = 0
+        # Step 5: Reorder explanations to include all features, fill missing ones with (-inf, inf)
         explanations_reordered = []
         for exp in explanations:
             exp_reordered = {}
@@ -254,91 +297,103 @@ class AnchorsPlanner:
                     exp_reordered[k] = exp[k]
                 else:
                     exp_reordered[k] = (-inf, inf, False, False)
-                    index = explanations.index(exp)
-                    missing = 1
-            if missing:
-                missing = 0
             explanations_reordered.append(exp_reordered)
-            self.explanations = explanations_reordered
-        
+
+        self.explanations = explanations_reordered
+
+        # Step 6: Filter anchors based on average predicted probabilities
         number_of_random_points = 10
-        number_of_explanations = len(explanations_reordered)
-        req_confidences_sum = np.zeros((1, 4))  # Initialize the sum of probabilities for each requirement
         coefficients_to_remove = []
-        for n in range(number_of_explanations):
-            single_anchor_mean = np.zeros((1, 4))
-            single_anchor = explanations[n]
-            
-            for i in range(number_of_random_points):
-                random_sample = np.zeros((1, feature_number))   
-                boundary_sample_a = np.zeros((1, feature_number))   
-                boundary_sample_b = np.zeros((1, feature_number))   
+
+        for n, single_anchor in enumerate(explanations_reordered):
+            single_anchor_mean = np.zeros((1, len(reqNames)))
+            for _ in range(number_of_random_points):
+                random_sample = np.zeros((1, feature_number))
+                boundary_sample_a = np.zeros((1, feature_number))
+                boundary_sample_b = np.zeros((1, feature_number))
 
                 for k in single_anchor:
                     a = max(single_anchor[k][0], 0)
                     b = min(single_anchor[k][1], 100)
-                    rand = np.random.uniform(a, b)
-                    random_sample[0, feature_names.index(k)] = rand
+                    rand_val = np.random.uniform(a, b)
+                    random_sample[0, feature_names.index(k)] = rand_val
                     boundary_sample_a[0, feature_names.index(k)] = a
                     boundary_sample_b[0, feature_names.index(k)] = b
 
                 probs = vecPredictProba(reqClassifiers, random_sample)
-                req_confidences_sum += probs
                 single_anchor_mean += probs
 
-            probs_boundary_a = vecPredictProba(reqClassifiers, boundary_sample_a)
-            single_anchor_mean += probs_boundary_a
-            probs_boundary_b = vecPredictProba(reqClassifiers, boundary_sample_b)
-            single_anchor_mean += probs_boundary_b
-
+            # Add boundary samples
+            single_anchor_mean += vecPredictProba(reqClassifiers, boundary_sample_a)
+            single_anchor_mean += vecPredictProba(reqClassifiers, boundary_sample_b)
             single_anchor_mean /= (number_of_random_points + 2)
-            if(np.any(single_anchor_mean < 0.5)):
+
+            # Remove if any requirement probability < 0.5
+            if np.any(single_anchor_mean < 0.5):
                 coefficients_to_remove.append(n)
 
-        req_confidences_sum /= number_of_explanations * number_of_random_points
+        # Keep only anchors with sufficient confidence
+        self.explanations = [
+            self.explanations[i] for i in range(len(self.explanations)) if i not in coefficients_to_remove
+        ]
 
-        # Remove anchors with average probabilities below 0.5
-        explanations_removed_negatives = [explanations[i] for i in range(len(explanations)) if i not in coefficients_to_remove]
-        explanations = explanations_removed_negatives
-
+        # Step 7: Save CSV outputs
+        # a) Anchors rules
         csv_data = []
-
         for sample_index in selected_samples:
             row = {
                 "sample_index": sample_index,
                 "rules": "; ".join(sample_to_rules.get(sample_index, [])),
                 "n_satisfied_reqs": int(pred_matrix[sample_index].sum())
             }
-
-            # (opzionale ma consigliato)
             for i, req in enumerate(reqNames):
                 row[f"pred_{req}"] = int(pred_matrix[sample_index, i])
                 row[f"real_{req}"] = int(datasets[i].labels_train[sample_index])
-
             csv_data.append(row)
 
-        df = pd.DataFrame(csv_data)
-        df.to_csv("anchors_rules.csv", index=False)
-        print("File anchors_rules.csv salvato correttamente!")
+        pd.DataFrame(csv_data).to_csv("anchors_rules.csv", index=False)
+        print("anchors_rules.csv saved successfully!")
 
-        csv_file = "anchors_explanations.csv"
-        with open(csv_file, mode='w', newline='') as f:
+        # b) Anchors explanations
+        with open("anchors_explanations.csv", "w", newline="") as f:
             writer = csv.writer(f)
-
-            # Intestazione
             writer.writerow(["n_satisfied_reqs", "satisfied_reqs"] + feature_names)
-
             for idx, exp in zip(selected_samples, self.explanations):
                 n_satisfied = int(pred_matrix[idx].sum())
-                satisfied = [reqNames[i] for i, val in enumerate(pred_matrix[idx]) if val==1]
-
-                row = [idx, n_satisfied, ";".join(satisfied)]
+                satisfied = [reqNames[i] for i, val in enumerate(pred_matrix[idx]) if val == 1]
+                row = [n_satisfied, ";".join(satisfied)]
                 for feat in feature_names:
-                    row.append(str(exp[feat]))  # salva l'intervallo come stringa
-
+                    row.append(str(exp[feat]))
                 writer.writerow(row)
 
-        print(f"CSV salvato correttamente con {len(selected_samples)} sample!")
+        print(f"anchors_explanations.csv saved successfully with {len(self.explanations)} samples!")
+
+    def _load_anchor_explanations(self, csv_path):
+        """
+        Loads anchor explanations from CSV and reconstructs self.explanations.
+        """
+
+        if not os.path.exists(csv_path):
+            raise FileNotFoundError(
+                f"Anchor explanations file not found: {csv_path}"
+            )
+
+        df = pd.read_csv(csv_path)
+
+        explanations = []
+
+        for _, row in df.iterrows():
+            anchor = {}
+
+            for feat in self.feature_names:
+                # Interval stored as string: "(a, b, False, False)"
+                anchor[feat] = eval(row[feat])
+
+            explanations.append(anchor)
+
+        self.explanations = explanations
+
+        print(f"Loaded {len(self.explanations)} anchor explanations from {csv_path}")
 
     def __get_anchor(self, a)-> tuple:
         """
