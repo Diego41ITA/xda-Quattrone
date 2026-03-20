@@ -7,3 +7,4 @@ pymoo==0.6.0.1
 numpy==1.24.1
 colorama==0.4.6
 matplotlib==3.6.3
+alibi

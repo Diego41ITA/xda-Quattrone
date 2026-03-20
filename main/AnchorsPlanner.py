@@ -571,7 +571,6 @@ class AnchorsPlanner:
 
         return contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable
 
-
     def evaluate_sample(self, sample, threshold = 0.8):
         """
         Method:
@@ -695,7 +694,6 @@ class AnchorsPlanner:
             confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
             return sample, confidence, outputs, n_iter           
             
-
     def go_inside_CF_given_polytope(self, sample, polytope, controllable_features, observable_features):
         """
             Adjusts the controllable feature values of a sample to ensure it lies within the bounds of a given polytope.
@@ -741,7 +739,6 @@ class AnchorsPlanner:
             elif(sample[i] > int(b)):
                 sample[i] = int(b) - np.abs(b-a)/10
         return sample
-
 
     def findBestAdaptation(self, sample, polytope, controllable_features, threshold=0.8, max_iter=1000):
         """

@@ -266,6 +266,14 @@ class WIPPlanner:
 
             for i in range(len(reqNames)):
                 sample = datasets[i].train[p_sample]
+                
+                # Check prediction for the requirement
+                pred = pred_matrix[p_sample, i]
+
+                # If the requirement is NOT satisfied, skip the anchors
+                if pred != 1:
+                    continue
+                
                 # Explain the sample
                 exp = self.explainer[i].explain_instance(
                     sample, self.reqClassifiers[i].predict, threshold=self.anchorsConfidence
