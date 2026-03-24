@@ -1,6 +1,7 @@
 venv
 
 .idea
+.png
 
 MDP_Dataset_Builder/*.csv
 MDP_Dataset_Builder/starting_combinations.npy

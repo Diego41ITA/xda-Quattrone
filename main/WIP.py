@@ -20,6 +20,7 @@ from typing import Optional, Tuple
 
 import itertools
 import time
+import CustomPlanner
 
 class WIPPlanner:
     """
@@ -144,7 +145,7 @@ class WIPPlanner:
         self.anchorsConfidence = anchorsConfidence
         self.controllableFeatureIndices = np.array(controllableFeatureIndices)
         self.controllableFeaturesNames = controllableFeaturesNames
-
+        self.build_explanations = build_explanations
         self.observableFeatureIndices = [i for i in range(feature_number) if i not in controllableFeatureIndices]
         self.observableFeaturesNames = [feature_names[i] for i in self.observableFeatureIndices]
         self.controllableFeatureDomains = controllableFeatureDomains
@@ -192,7 +193,7 @@ class WIPPlanner:
             )
         
         # Build or load anchor explanations
-        if build_explanations:
+        if self.build_explanations:
             self._build_anchor_explanations(
                 training_dataset,
                 reqClassifiers,
@@ -200,8 +201,6 @@ class WIPPlanner:
                 feature_number,
                 feature_names,
             )
-        else:
-            self._load_anchor_explanations(explanations_csv)
 
     def _build_anchor_explanations(
     self,
@@ -376,9 +375,11 @@ class WIPPlanner:
 
         print(f"anchors_explanations.csv saved successfully with {len(self.explanations)} samples!")
 
-    def _load_anchor_explanations(self, csv_path):
+    def _load_anchor_explanations(self, csv_path, input_row):
         """
-        Loads anchor explanations from CSV and reconstructs self.explanations.
+        Loads anchor explanations from CSV and keeps only those whose
+        number of satisfied requirements is >= the requirements satisfied
+        by the given input row.
         """
 
         if not os.path.exists(csv_path):
@@ -388,9 +389,18 @@ class WIPPlanner:
 
         df = pd.read_csv(csv_path)
 
+        # count satisfied requirements in the input row
+        req_cols = [c for c in input_row.index if c.startswith("req_")]
+        n_req_input = int(input_row[req_cols].sum())
+
         explanations = []
 
         for _, row in df.iterrows():
+
+            # filter explanations
+            if row["n_satisfied_reqs"] < n_req_input:
+                continue
+
             anchor = {}
 
             for feat in self.feature_names:
@@ -400,8 +410,6 @@ class WIPPlanner:
             explanations.append(anchor)
 
         self.explanations = explanations
-
-        print(f"Loaded {len(self.explanations)} anchor explanations from {csv_path}")
 
     def __get_anchor(self, a)-> tuple:
         """
@@ -625,6 +633,7 @@ class WIPPlanner:
         for i in range(len(explanations_table)):
             for j, f_name in enumerate(controllable_features):
                 a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
+                #è corretto?
                 if a == -inf:
                     a = 0
                 if b == inf:
@@ -717,6 +726,8 @@ class WIPPlanner:
         - A sample inside both polytope types is evaluated immediately.
         - Adaptation aims to increase model confidence beyond the threshold.
         """
+        if self.build_explanations == False:
+            self._load_anchor_explanations("anchors_explanations.csv", sample)
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
 
@@ -744,6 +755,7 @@ class WIPPlanner:
 
                 sample = self.go_inside_CF_given_polytope(sample, polytope, self.controllableFeaturesNames, self.observableFeaturesNames)
                 #check is its now inside the polytope
+                #è un residuo di debug?
                 for i, f_name in enumerate(self.controllableFeaturesNames):
                     inside = self.__inside(sample[i], polytope[f_name])
                     if not inside:
@@ -841,6 +853,7 @@ class WIPPlanner:
 
         for i, f_name in enumerate(controllable_features):
             a, b = polytope[f_name][0], polytope[f_name][1]
+            #è corretto?
             if a == -inf:
                 a = 0
             if b == inf:
