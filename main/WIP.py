@@ -21,6 +21,7 @@ from typing import Optional, Tuple
 import itertools
 import time
 import CustomPlanner
+import ast
 
 class WIPPlanner:
     """
@@ -194,7 +195,7 @@ class WIPPlanner:
         
         # Build or load anchor explanations
         if self.build_explanations:
-            self._build_anchor_explanations(
+            self.__build_anchor_explanations(
                 training_dataset,
                 reqClassifiers,
                 reqNames,
@@ -202,7 +203,7 @@ class WIPPlanner:
                 feature_names,
             )
 
-    def _build_anchor_explanations(
+    def __build_anchor_explanations(
     self,
     training_dataset,
     reqClassifiers,
@@ -375,12 +376,14 @@ class WIPPlanner:
 
         print(f"anchors_explanations.csv saved successfully with {len(self.explanations)} samples!")
 
-    def _load_anchor_explanations(self, csv_path, input_row):
+    def __load_anchor_explanations(self, csv_path, min_satisfied_reqs):
         """
-        Loads anchor explanations from CSV and keeps only those whose
-        number of satisfied requirements is >= the requirements satisfied
-        by the given input row.
+        Loads anchor explanations from CSV and reconstructs self.explanations.
+        Only rows with n_satisfied_reqs >= min_satisfied_reqs are loaded.
         """
+
+        import os
+        import pandas as pd
 
         if not os.path.exists(csv_path):
             raise FileNotFoundError(
@@ -389,28 +392,22 @@ class WIPPlanner:
 
         df = pd.read_csv(csv_path)
 
-        # count satisfied requirements in the input row
-        req_cols = [c for c in input_row.index if c.startswith("req_")]
-        n_req_input = int(input_row[req_cols].sum())
-
         explanations = []
 
         for _, row in df.iterrows():
-
-            # filter explanations
-            if row["n_satisfied_reqs"] < n_req_input:
-                continue
-
-            anchor = {}
-
-            for feat in self.feature_names:
-                # Interval stored as string: "(a, b, False, False)"
-                anchor[feat] = eval(row[feat])
-
-            explanations.append(anchor)
+            # Controllo del numero di requisiti soddisfatti
+            if row.get("n_satisfied_reqs", 0) >= min_satisfied_reqs:
+                anchor = {}
+                for feat in self.feature_names:
+                    # Interval stored as string: "(a, b, False, False)"
+                    anchor[feat] = eval(row[feat])
+                explanations.append(anchor)
 
         self.explanations = explanations
 
+        print(f"Loaded {len(self.explanations)} anchor explanations from {csv_path} "
+            f"with n_satisfied_reqs >= {min_satisfied_reqs}")
+        
     def __get_anchor(self, a)-> tuple:
         """
         Function to separate the name of the feature from the ranges.
@@ -686,7 +683,7 @@ class WIPPlanner:
 
         return contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable
 
-    def evaluate_sample(self, sample, threshold = 0.8):
+    def evaluate_sample(self, sample, nreqs, threshold = 0.8):
         """
         Method:
         1. Computes the minimum distance from the sample to polytopes (controllable and observable).
@@ -726,8 +723,8 @@ class WIPPlanner:
         - A sample inside both polytope types is evaluated immediately.
         - Adaptation aims to increase model confidence beyond the threshold.
         """
-        if self.build_explanations == False:
-            self._load_anchor_explanations("anchors_explanations.csv", sample)
+
+        self.__load_anchor_explanations("anchors_explanations.csv", nreqs)
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
 
@@ -797,9 +794,6 @@ class WIPPlanner:
                 if not inside:
                     inside = False
             
-
-            
-
             #Evaluate the sample with the model
             outputs = np.zeros(len(self.reqNames))
             output = True
@@ -814,6 +808,7 @@ class WIPPlanner:
             if min_prob < threshold:
                 sample, n_iter = self.findBestAdaptation(sample, self.explanations[min_dist_index_observable], self.controllableFeaturesNames)
             confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
+            
             return sample, confidence, outputs, n_iter           
             
     def go_inside_CF_given_polytope(self, sample, polytope, controllable_features, observable_features):

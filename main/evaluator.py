@@ -117,7 +117,7 @@ if __name__ == '__main__':
     # split the dataset
     X = ds_new.loc[:, featureNames]
     y = ds_new.loc[:, reqs]
-    X_train_new, X_test_new, y_train, y_test = train_test_split(
+    X_train_new, X_test_new, y_train_new, y_test_new = train_test_split(
         X, y, test_size=0.4, random_state=42
     )
 
@@ -127,11 +127,11 @@ if __name__ == '__main__':
 
         models_new.append(constructModel(X_train_new.values,
                                      X_test_new.values,
-                                     np.ravel(y_train.loc[:, req]),
-                                     np.ravel(y_test.loc[:, req])))
+                                     np.ravel(y_train_new.loc[:, req]),
+                                     np.ravel(y_test_new.loc[:, req])))
         print("=" * 100)
 
-    ds_train = pd.DataFrame(np.hstack((X_train_new, y_train)), columns=featureNames + reqs)
+    ds_train = pd.DataFrame(np.hstack((X_train_new, y_train_new)), columns=featureNames + reqs)
     trainPath = "../datasets/X_train_new.csv"
     ds_train.to_csv(trainPath, index=False)
     
@@ -173,6 +173,10 @@ if __name__ == '__main__':
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
+
+        num_reqs_satisfied = 0
+        reqs_row = y_test.iloc[rowIndex, :].to_numpy()
+        num_reqs_satisfied = np.sum(reqs_row)
 
         print(Fore.BLUE + "Test " + str(k) + ":" + Style.RESET_ALL)
         print("Row " + str(rowIndex) + ":\n" + str(row))
@@ -241,7 +245,8 @@ if __name__ == '__main__':
 
         # wip algorithm
         startTime = time.time()
-        customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row)
+        customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row, num_reqs_satisfied)
+        customAdaptation_wip, customConfidence, customScore = customPlanner.findAdaptation(customAdaptation_wip)
         endTime = time.time()
         
         wipTime = endTime - startTime
@@ -393,13 +398,19 @@ if __name__ == '__main__':
 
         print(Style.RESET_ALL + "=" * 100)
 
-        results.append([nsga3Adaptation, customAdaptation, customAdaptation_anchors, customAdaptation_wip,
-                        nsga3Confidence, customConfidence, customConfidence_anchors, customConfidence_wip,
-                        nsga3Score, customScore, customScore_anchors, customScore_wip,
-                        scoreDiffCustomNSGA, scoreDiffAnchorsCustom, scoreDiffAnchorsNSGA, scoreDiffAnchorsWip,
-                        scoreImprovementCustomNSGA,scoreImprovementAnchorsCustom, scoreImprovementAnchorsNSGA, scoreImprovementAnchorsWip,
-                        nsga3Time, customTime, anchorsTime, wipTime,
-                        speedupCustomNSGA, speedupAnchorsNSGA, speedupAnchorsCustom, speedupWipAnchors, n_iter_anchors, n_iter_wip])
+        results.append([nsga3Adaptation.copy() if nsga3Adaptation is not None else None,
+                customAdaptation.copy() if customAdaptation is not None else None,
+                customAdaptation_anchors.copy() if customAdaptation_anchors is not None else None,
+                customAdaptation_wip.copy() if customAdaptation_wip is not None else None,
+                nsga3Confidence.copy() if nsga3Confidence is not None else None,
+                customConfidence.copy() if customConfidence is not None else None,
+                customConfidence_anchors.copy() if customConfidence_anchors is not None else None,
+                customConfidence_wip.copy() if customConfidence_wip is not None else None,
+                nsga3Score, customScore, customScore_anchors, customScore_wip,
+                scoreDiffCustomNSGA, scoreDiffAnchorsCustom, scoreDiffAnchorsNSGA, scoreDiffAnchorsWip,
+                scoreImprovementCustomNSGA, scoreImprovementAnchorsCustom, scoreImprovementAnchorsNSGA, scoreImprovementAnchorsWip,
+                nsga3Time, customTime, anchorsTime, wipTime,
+                speedupCustomNSGA, speedupAnchorsNSGA, speedupAnchorsCustom, speedupWipAnchors, n_iter_anchors, n_iter_wip])
         
 
 
