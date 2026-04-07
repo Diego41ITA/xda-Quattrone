@@ -298,13 +298,19 @@ class WIPPlanner:
 
         # Step 5: Reorder explanations to include all features, fill missing ones with (-inf, inf)
         explanations_reordered = []
-        for exp in explanations:
+
+        for exp, sample_idx in zip(explanations, selected_samples):
+
             exp_reordered = {}
+
+            exp_reordered["n_satisfied_reqs"] = int(pred_matrix[sample_idx].sum())
+
             for k in feature_names:
                 if k in exp:
                     exp_reordered[k] = exp[k]
                 else:
                     exp_reordered[k] = (-inf, inf, False, False)
+
             explanations_reordered.append(exp_reordered)
 
         self.explanations = explanations_reordered
@@ -398,6 +404,10 @@ class WIPPlanner:
             # Controllo del numero di requisiti soddisfatti
             if row.get("n_satisfied_reqs", 0) >= min_satisfied_reqs:
                 anchor = {}
+
+                #save the number of satisfied requirements for later use
+                anchor["n_satisfied_reqs"] = int(row["n_satisfied_reqs"])
+
                 for feat in self.feature_names:
                     # Interval stored as string: "(a, b, False, False)"
                     anchor[feat] = eval(row[feat])
@@ -618,6 +628,7 @@ class WIPPlanner:
         - Bounds of `-inf` and `inf` in intervals are replaced by 0 and 100 respectively for distance calculation.
         - The observable features are assumed to start at index offset `len(controllable_features)` in `x`.
         """
+
         min_dist_controllable = np.inf
         min_dist_index_controllable = -1
 
@@ -627,61 +638,89 @@ class WIPPlanner:
         contr_f_dist = np.zeros(len(explanations_table))
         obs_f_dist = np.zeros(len(explanations_table))
 
-        for i in range(len(explanations_table)):
-            for j, f_name in enumerate(controllable_features):
-                a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-                #è corretto?
-                if a == -inf:
-                    a = 0
-                if b == inf:
-                    b = 100
-                if(x[j] < a):
-                    d = (a - x[j]) ** 2
-                    contr_f_dist[i] += d
-                    if(contr_f_dist[i] >= min_dist_controllable):
-                        break
-                elif(x[j] > b):
-                    d = (b - x[j]) ** 2
-                    contr_f_dist[i] += d
-                    if(contr_f_dist[i] >= min_dist_controllable):
-                        break
-            if(contr_f_dist[i] < min_dist_controllable):
-                min_dist_controllable = contr_f_dist[i]
-                min_dist_index_controllable = i
+        # livelli di requisiti disponibili
+        req_levels = sorted(
+            {exp["n_satisfied_reqs"] for exp in explanations_table},
+            reverse=True
+        )
 
+        zero_found = False
 
-            for j, f_name in enumerate(observable_features): 
-                jj = j + 3
-                a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-                if a == -inf:
-                    a = 0
-                if b == inf:
-                    b = 100
+        for req in req_levels:
 
-                if(x[jj] < a):
-                    d = (a - x[jj]) ** 2
-                    obs_f_dist[i] += d
-                    if(obs_f_dist[i] >= min_dist_observable):
-                        break
-                elif(x[jj] > b):
-                    d = (b - x[jj]) ** 2
-                    obs_f_dist[i] += d
-                    if(obs_f_dist[i] >= min_dist_observable):
-                        break
-            if(obs_f_dist[i] < min_dist_observable):
-                min_dist_observable = obs_f_dist[i]
-                min_dist_index_observable = i
+            # indici dei polytopes con questo numero di requisiti
+            indices = [
+                i for i, exp in enumerate(explanations_table)
+                if exp["n_satisfied_reqs"] == req
+            ]
 
-        #This adds the case in which there are muptile polytopes with the same distance, choose the one common to both
-        mask_controllable = np.where(contr_f_dist == 0)[0]
-        mask_observable = np.where(obs_f_dist == 0)[0]
-        for index in mask_observable:
-            if index in mask_controllable:
-                min_dist_index_observable = index
-                min_dist_index_controllable = index
+            for i in indices:
+
+                # ---------- controllable ----------
+                for j, f_name in enumerate(controllable_features):
+
+                    a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
+
+                    if a == -inf:
+                        a = 0
+                    if b == inf:
+                        b = 100
+
+                    if x[j] < a:
+                        d = (a - x[j]) ** 2
+                        contr_f_dist[i] += d
+                    elif x[j] > b:
+                        d = (b - x[j]) ** 2
+                        contr_f_dist[i] += d
+
+                # ---------- observable ----------
+                for j, f_name in enumerate(observable_features):
+
+                    jj = j + len(controllable_features)
+
+                    a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
+
+                    if a == -inf:
+                        a = 0
+                    if b == inf:
+                        b = 100
+
+                    if x[jj] < a:
+                        d = (a - x[jj]) ** 2
+                        obs_f_dist[i] += d
+                    elif x[jj] > b:
+                        d = (b - x[jj]) ** 2
+                        obs_f_dist[i] += d
+
+                # controllo distanza zero
+                if obs_f_dist[i] == 0:
+                    min_dist_controllable = contr_f_dist[i]
+                    min_dist_observable = 0
+                    min_dist_index_controllable = i
+                    min_dist_index_observable = i
+                    zero_found = True
+                    break
+
+            if zero_found:
                 break
 
-        return contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable
+        # se non abbiamo trovato distanza zero
+        if not zero_found:
+
+            min_dist_index_controllable = np.argmin(contr_f_dist)
+            min_dist_controllable = contr_f_dist[min_dist_index_controllable]
+
+            min_dist_index_observable = np.argmin(obs_f_dist)
+            min_dist_observable = obs_f_dist[min_dist_index_observable]
+
+        return (
+            contr_f_dist,
+            obs_f_dist,
+            min_dist_controllable,
+            min_dist_index_controllable,
+            min_dist_observable,
+            min_dist_index_observable
+        )
 
     def evaluate_sample(self, sample, nreqs, threshold = 0.8):
         """
