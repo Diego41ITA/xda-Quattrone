@@ -1,9 +1,12 @@
 import numpy as np
 import pandas as pd
 import math
-import matplotlib.pyplot as plt
+import matplotlib
 import os
 import sys
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 # =========================
 # Parsing intervalli e distanza punto->box

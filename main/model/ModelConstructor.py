@@ -1,7 +1,7 @@
 # Import for Construct Defect Models (Classification)
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+import matplotlib
 from IPython.display import display
 from sklearn.linear_model import LogisticRegression  # Logistic Regression
 from sklearn.ensemble import RandomForestClassifier  # Random Forests
@@ -10,6 +10,9 @@ from sklearn.neural_network import MLPClassifier  # Neural Network
 from sklearn.ensemble import GradientBoostingClassifier  # Gradient Boosting Machine (GBM)
 import xgboost as xgb  # eXtreme Gradient Boosting Tree (xGBTree)
 from sklearn.metrics import roc_auc_score
+
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
 
 
 def constructModel(X_train, X_test, y_train, y_test, export=False):

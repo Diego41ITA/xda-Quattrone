@@ -676,7 +676,7 @@ class WIPPlanner:
                 # ---------- observable ----------
                 for j, f_name in enumerate(observable_features):
 
-                    jj = j + len(controllable_features)
+                    jj = j + 3
 
                     a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
 
@@ -721,6 +721,97 @@ class WIPPlanner:
             min_dist_observable,
             min_dist_index_observable
         )
+
+    def _optimize_pdp_greedy_step(
+        self,
+        adaptation,
+        confidence,
+        is_valid_adaptation,
+        neighbor_index,
+        excluded_features,
+        temp_excluded_features,
+    ):
+        feature_index = None
+        controllable_index = None
+        min_confidence_loss = None
+
+        for i, index in enumerate(self.controllableFeatureIndices):
+            if i not in excluded_features and i not in temp_excluded_features:
+                slope = pdp.getSlope(self.summaryPdps[i], adaptation[index], neighbor_index)
+                confidence_loss = slope * self.optimizationDirections[i]
+                if min_confidence_loss is None or confidence_loss < min_confidence_loss:
+                    feature_index = index
+                    controllable_index = i
+                    min_confidence_loss = confidence_loss
+
+        if feature_index is None:
+            return np.copy(adaptation), np.copy(confidence), False
+
+        new_adaptation = np.copy(adaptation)
+        new_adaptation[feature_index] += self.optimizationDirections[controllable_index] * self.delta
+
+        feature_min = self.controllableFeatureDomains[controllable_index, 0]
+        feature_max = self.controllableFeatureDomains[controllable_index, 1]
+
+        if new_adaptation[feature_index] < feature_min:
+            new_adaptation[feature_index] = feature_min
+            excluded_features.append(controllable_index)
+        elif new_adaptation[feature_index] > feature_max:
+            new_adaptation[feature_index] = feature_max
+            excluded_features.append(controllable_index)
+
+        new_confidence = vecPredictProba(self.reqClassifiers, [new_adaptation])[0]
+
+        if (is_valid_adaptation and (new_confidence < self.targetConfidence).any()) or (
+            not is_valid_adaptation and (new_confidence < confidence).any()
+        ):
+            temp_excluded_features.append(controllable_index)
+            return np.copy(adaptation), np.copy(confidence), False
+
+        temp_excluded_features.clear()
+        return new_adaptation, new_confidence, True
+
+    def findPdpFallbackAdaptation(self, sample, threshold=0.8, max_steps=1000):
+        adaptation = np.copy(sample)
+        confidence = vecPredictProba(self.reqClassifiers, [adaptation])[0]
+        n_controllable_features = len(self.controllableFeatureIndices)
+
+        excluded_features = []
+        temp_excluded_features = []
+        calls = 0
+        n_iter = 0
+
+        neighbor_index = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+
+        while len(excluded_features) + len(temp_excluded_features) < n_controllable_features and n_iter < max_steps:
+            if calls >= 10:
+                neighbor_index = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+                calls = 0
+
+            is_valid_adaptation = (confidence >= self.targetConfidence).all()
+            new_adaptation, new_confidence, moved = self._optimize_pdp_greedy_step(
+                adaptation,
+                confidence,
+                is_valid_adaptation,
+                neighbor_index,
+                excluded_features,
+                temp_excluded_features,
+            )
+
+            n_iter += 1
+            calls += 1
+
+            if moved:
+                adaptation = new_adaptation
+                confidence = new_confidence
+
+            if np.min(confidence) >= threshold:
+                break
+
+            if not moved and len(temp_excluded_features) == 0:
+                break
+
+        return adaptation, confidence, n_iter
 
     def evaluate_sample(self, sample, nreqs, threshold = 0.8):
         """
@@ -775,15 +866,15 @@ class WIPPlanner:
                 for r, req in enumerate(self.reqNames):                    
                     #classify the samplsses with the model
                     tmp_output = self.reqClassifiers[r].predict(sample.reshape(1, -1))
-                    outputs[r] = tmp_output
-                    output = output and bool(tmp_output)
+                    outputs[r] = tmp_output[0]
+                    output = output and bool(tmp_output[0])
                 
                 confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))
                 min_prob = np.min(confidence)
                 n_iter = 0
                 if min_prob < threshold:
                     sample, n_iter = self.findBestAdaptation(sample, self.explanations[min_dist_index_observable], self.controllableFeaturesNames)
-                confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))
+                confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
 
                 return sample, confidence, outputs, n_iter  
             else:
@@ -807,48 +898,25 @@ class WIPPlanner:
                 for r, req in enumerate(self.reqNames):
                     #classify the samples with the model
                     tmp_output = self.reqClassifiers[r].predict(sample.reshape(1, -1))
-                    outputs[r] = tmp_output
-                    output = output and bool(tmp_output)
+                    outputs[r] = tmp_output[0]
+                    output = output and bool(tmp_output[0])
                 contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
                 confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))
                 min_prob = np.min(confidence) 
                 n_iter = 0
                 if min_prob < threshold:
                     sample, n_iter = self.findBestAdaptation(sample, self.explanations[min_dist_index_observable], self.controllableFeaturesNames)
-                confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))
+                confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
                 return sample, confidence, outputs, n_iter   
         else:
-            #Now we want to change the CF to get as close as possible to that polytope
-            polytope = self.explanations[min_dist_index_observable]
-
-            sample = self.go_inside_CF_given_polytope(sample, polytope, self.controllableFeaturesNames, self.observableFeaturesNames)
-
-            #check is its now inside the polytope for the CF
-            for i, f_name in enumerate(self.controllableFeaturesNames):
-                inside = self.__inside(sample[i], polytope[f_name])
-                if not inside:
-                    inside = False
-            for i, f_name in enumerate(self.observableFeaturesNames):
-                inside = self.__inside(sample[i+3], polytope[f_name])
-                if not inside:
-                    inside = False
-            
-            #Evaluate the sample with the model
+            sample, confidence, n_iter = self.findPdpFallbackAdaptation(sample, threshold)
             outputs = np.zeros(len(self.reqNames))
             output = True
-            for r, req in enumerate(self.reqNames):                
-                #classify the samplsses with the model
+            for r, req in enumerate(self.reqNames):
                 tmp_output = self.reqClassifiers[r].predict(sample.reshape(1, -1))
-                outputs[r] = tmp_output
-                output = output and bool(tmp_output)
-            confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))
-            min_prob = np.min(confidence)
-            n_iter = 0
-            if min_prob < threshold:
-                sample, n_iter = self.findBestAdaptation(sample, self.explanations[min_dist_index_observable], self.controllableFeaturesNames)
-            confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
-            
-            return sample, confidence, outputs, n_iter           
+                outputs[r] = tmp_output[0]
+                output = output and bool(tmp_output[0])
+            return sample, confidence, outputs, n_iter
             
     def go_inside_CF_given_polytope(self, sample, polytope, controllable_features, observable_features):
         """

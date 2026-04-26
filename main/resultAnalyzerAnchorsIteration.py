@@ -4,10 +4,12 @@ import sys
 import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from matplotlib import ticker
 
 from util import readFromCsv, evaluateAdaptations
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 font = {'family' : 'sans',

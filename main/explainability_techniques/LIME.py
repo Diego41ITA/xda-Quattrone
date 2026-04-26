@@ -1,6 +1,9 @@
-import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 from lime import lime_tabular
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 def createLimeExplainer(X_train):

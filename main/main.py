@@ -336,7 +336,7 @@ if __name__ == '__main__':
     path = "../results"
     if not os.path.exists(path):
         os.makedirs(path)
-    results.to_csv(path + "/results_new.csv")
+    results.to_csv(path + "/results.csv")
 
     if evaluate:
         evaluateAdaptations(results, featureNames)

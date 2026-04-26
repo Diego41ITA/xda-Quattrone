@@ -4,10 +4,12 @@ import sys
 import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from matplotlib import ticker
 
 from util import readFromCsv, evaluateAdaptations
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 font = {'family' : 'sans',
@@ -246,7 +248,7 @@ reqs = ["req_0", "req_1", "req_2", "req_3"]
 reqsNamesInGraphs = ["R1", "R2", "R3", "R4"]
 
 # read dataframe from csv
-results = readFromCsv(pathToResults + 'results_new.csv')
+results = readFromCsv(pathToResults + 'results.csv')
 nReqs = len(results["nsga3_confidence"][0])
 reqs = reqs[:nReqs]
 reqsNamesInGraphs = reqsNamesInGraphs[:nReqs]

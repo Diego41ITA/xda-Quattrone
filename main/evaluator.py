@@ -3,6 +3,7 @@ import os
 import glob
 import time
 import warnings
+import matplotlib
 import pandas as pd
 import numpy as np
 from colorama import Fore, Style
@@ -14,6 +15,8 @@ from NSGA3Planner import NSGA3Planner
 from util import vecPredictProba, evaluateAdaptations
 from AnchorsPlanner import AnchorsPlanner
 from WIP import WIPPlanner
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 np.random.seed(42)
@@ -44,7 +47,7 @@ if __name__ == '__main__':
     # evaluate adaptations
     evaluate = True
 
-    ds = pd.read_csv('../datasets/dataset5000.csv')
+    ds = pd.read_csv('../datasets/balanced_dataset.csv')
     featureNames = ["cruise speed",
                     "image resolution",
                     "illuminance",
@@ -54,14 +57,14 @@ if __name__ == '__main__':
                     "obstacle size",
                     "obstacle distance",
                     "firm obstacle"]
-    controllableFeaturesNames = featureNames[0:4]
-    externalFeaturesNames = featureNames[4:9]
+    controllableFeaturesNames = featureNames[0:3]
+    externalFeaturesNames = featureNames[3:7]
     controllableFeatureIndices = [0, 1, 2]
 
     # for simplicity, we consider all the ideal points to be 0 or 100
     # so that we just need to consider ideal directions instead
     # -1 => minimize, 1 => maximize
-    optimizationDirections = [1, -1, -1, -1]
+    optimizationDirections = [1, -1, -1]
 
     reqs = ["req_0", "req_1", "req_2", "req_3"]
 
@@ -99,10 +102,10 @@ if __name__ == '__main__':
 
     # initialize planners
     customPlanner = CustomPlanner(X_train, n_neighbors, n_startingSolutions, models, targetConfidence,
-                                  controllableFeaturesNames, [0, 1, 2, 3], controllableFeatureDomains,
+                                  controllableFeaturesNames, controllableFeatureIndices, controllableFeatureDomains,
                                   optimizationDirections, optimizationScore, 1, "../explainability_plots")
 
-    nsga3Planner = NSGA3Planner(models, targetConfidence, [0, 1, 2, 3], controllableFeatureDomains,
+    nsga3Planner = NSGA3Planner(models, targetConfidence, controllableFeatureIndices, controllableFeatureDomains,
                                 optimizationDirections, successScore, optimizationScore)
     
     wipPlanner = WIPPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames, controllableFeaturesNames, 
@@ -169,7 +172,7 @@ if __name__ == '__main__':
     for f in files:
         os.remove(f)
 
-    testNum = 200
+    testNum = 500
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
@@ -246,7 +249,6 @@ if __name__ == '__main__':
         # wip algorithm
         startTime = time.time()
         customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row, num_reqs_satisfied)
-        customAdaptation_wip, customConfidence, customScore = customPlanner.findAdaptation(customAdaptation_wip)
         endTime = time.time()
         
         wipTime = endTime - startTime
@@ -424,7 +426,7 @@ if __name__ == '__main__':
     path = "../results"
     if not os.path.exists(path):
         os.makedirs(path)
-    results.to_csv(path + "/results_new.csv")
+    results.to_csv(path + "/results.csv")
 
     if evaluate:
         evaluateAdaptations(results, featureNames)

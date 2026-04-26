@@ -1,8 +1,10 @@
 import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.inspection as ins
 import copy
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 font = {'family' : 'sans',
