@@ -21,6 +21,13 @@ BUILDER_DIR = PROJECT_ROOT / "MDP_Dataset_Builder"
 RESULTS_DIR = PROJECT_ROOT / "results"
 DEFAULT_TOTAL_THREADS = 8
 _EVALUATION_LOCK = threading.Lock()
+TIME_EPSILON = 1e-10
+
+
+def guard_time_value(time_value, epsilon=TIME_EPSILON):
+    if time_value == 0:
+        return epsilon
+    return time_value
 
 def vecPredictProba(models, X):
     if type(X) is list:

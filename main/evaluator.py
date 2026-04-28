@@ -12,7 +12,7 @@ from model.ModelConstructor import constructModel
 import explainability_techniques.LIME as lime
 from CustomPlanner import CustomPlanner
 from NSGA3Planner import NSGA3Planner
-from util import vecPredictProba, evaluateAdaptations
+from util import vecPredictProba, evaluateAdaptations, guard_time_value
 from AnchorsPlanner import AnchorsPlanner
 from WIP import WIPPlanner
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # evaluate adaptations
     evaluate = True
 
-    ds = pd.read_csv('../datasets/balanced_dataset.csv')
+    ds = pd.read_csv('../datasets/balanced_dataset2.csv')
     featureNames = ["cruise speed",
                     "image resolution",
                     "illuminance",
@@ -114,31 +114,8 @@ if __name__ == '__main__':
     
     # create lime explainer
     limeExplainer = lime.createLimeExplainer(X_train)
-
-    ds_new = pd.read_csv('../datasets/new_dataset.csv')
-
-    # split the dataset
-    X = ds_new.loc[:, featureNames]
-    y = ds_new.loc[:, reqs]
-    X_train_new, X_test_new, y_train_new, y_test_new = train_test_split(
-        X, y, test_size=0.4, random_state=42
-    )
-
-    models_new = []
-    for req in reqs:
-        print(Fore.RED + "Requirement: " + req + "\n" + Style.RESET_ALL)
-
-        models_new.append(constructModel(X_train_new.values,
-                                     X_test_new.values,
-                                     np.ravel(y_train_new.loc[:, req]),
-                                     np.ravel(y_test_new.loc[:, req])))
-        print("=" * 100)
-
-    ds_train = pd.DataFrame(np.hstack((X_train_new, y_train_new)), columns=featureNames + reqs)
-    trainPath = "../datasets/X_train_new.csv"
-    ds_train.to_csv(trainPath, index=False)
     
-    anchorsPlanner = AnchorsPlanner(trainPath, models_new, reqs, 0.95, len(featureNames),featureNames,controllableFeatureIndices, controllableFeatureDomains)
+    anchorsPlanner = AnchorsPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames,controllableFeatureIndices, controllableFeatureDomains)
 
     # metrics
     meanCustomScore = 0
@@ -172,7 +149,7 @@ if __name__ == '__main__':
     for f in files:
         os.remove(f)
 
-    testNum = 500
+    testNum = 200
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
@@ -204,7 +181,7 @@ if __name__ == '__main__':
             customScore_anchors = optimizationScore(customAdaptation_anchors) if customAdaptation_anchors is not None else None
                     
             for i, req in enumerate(reqs):
-                lime.saveExplanation(lime.explain(limeExplainer, models_new[i], customAdaptation_anchors),
+                lime.saveExplanation(lime.explain(limeExplainer, models[i], customAdaptation_anchors),
                                      path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
@@ -307,10 +284,10 @@ if __name__ == '__main__':
         scoreDiffAnchorsWip = None
         scoreImprovementAnchorsWip = None
 
-        epsilon = 1e-10
-
-        if anchorsTime == 0:
-            anchorsTime = epsilon
+        anchorsTime = guard_time_value(anchorsTime)
+        customTime = guard_time_value(customTime)
+        wipTime = guard_time_value(wipTime)
+        nsga3Time = guard_time_value(nsga3Time)
         
         speedupCustomNSGA = nsga3Time / customTime #speedup of Custom wrt NSGA3
         speedupAnchorsNSGA = nsga3Time / anchorsTime #speedup of Anchors wrt NSGA3

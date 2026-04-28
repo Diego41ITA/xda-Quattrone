@@ -15,7 +15,7 @@ import explainability_techniques.LIME as lime
 from CustomPlanner import CustomPlanner
 from NSGA3Planner import NSGA3Planner
 from WIP import AnchorsPlanner
-from util import vecPredictProba, evaluateAdaptations
+from util import vecPredictProba, evaluateAdaptations, guard_time_value
 
 
 # success score function (based on the signed distance with respect to the target success probabilities)
@@ -247,6 +247,10 @@ if __name__ == '__main__':
 
         scoreDiffAnchorsNSGA = None
         scoreImprovementAnchorsNSGA = None
+
+        anchorsTime = guard_time_value(anchorsTime)
+        customTime = guard_time_value(customTime)
+        nsga3Time = guard_time_value(nsga3Time)
 
         speedupCustomNSGA = nsga3Time / customTime #speedup of Custom wrt NSGA3
         speedupAnchorsNSGA = nsga3Time / anchorsTime #speedup of Anchors wrt NSGA3
