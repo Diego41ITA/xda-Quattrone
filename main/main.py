@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # evaluate adaptations
     evaluate = True
 
-    ds = pd.read_csv('../datasets/balanced_dataset.csv')
+    ds = pd.read_csv('../datasets/balanced_dataset2.csv')
     featureNames = ["cruise speed",
                     "image resolution",
                     "illuminance",

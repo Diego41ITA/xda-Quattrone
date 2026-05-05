@@ -232,7 +232,7 @@ def personalizedBarChart(data, name, path=None, show=False, percentage=False):
 os.chdir(sys.path[0])
 evaluate = False
 
-pathToResults = "../results/" #sys.argv[1]
+pathToResults = "../results/dataset15000_balanced_joint/" #sys.argv[1]
 
 featureNames = ["cruise speed",
                 "image resolution",

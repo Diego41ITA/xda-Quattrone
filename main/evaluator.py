@@ -3,6 +3,7 @@ import os
 import glob
 import time
 import warnings
+from pathlib import Path
 import matplotlib
 import pandas as pd
 import numpy as np
@@ -15,6 +16,7 @@ from NSGA3Planner import NSGA3Planner
 from util import vecPredictProba, evaluateAdaptations, guard_time_value
 from AnchorsPlanner import AnchorsPlanner
 from WIP import WIPPlanner
+from util import build_results_dir, build_explainability_paths
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -47,7 +49,13 @@ if __name__ == '__main__':
     # evaluate adaptations
     evaluate = True
 
-    ds = pd.read_csv('../datasets/balanced_dataset2.csv')
+    datasetPath = Path("../datasets/dataset5000_balanced_joint.csv")
+    resultsDir = build_results_dir(datasetPath)
+    trainPath = resultsDir / "X_train.csv"
+    evaluatedTestPath = resultsDir / "X_test_evaluated.csv"
+    resultsDir.mkdir(parents=True, exist_ok=True)
+
+    ds = pd.read_csv(datasetPath)
     featureNames = ["cruise speed",
                     "image resolution",
                     "illuminance",
@@ -82,8 +90,6 @@ if __name__ == '__main__':
         X, y, test_size=0.4, random_state=42
     )
 
-    trainPath = "../datasets/X_train.csv"
-
     models = []
     for req in reqs:
         print(Fore.RED + "Requirement: " + req + "\n" + Style.RESET_ALL)
@@ -97,13 +103,13 @@ if __name__ == '__main__':
     controllableFeatureDomains = np.repeat([[0, 100]], n_controllableFeatures, 0)
 
     ds_train = pd.DataFrame(np.hstack((X_train, y_train)), columns=featureNames + reqs)
-    trainPath = "../datasets/X_train.csv"
     ds_train.to_csv(trainPath, index=False)
 
     # initialize planners
     customPlanner = CustomPlanner(X_train, n_neighbors, n_startingSolutions, models, targetConfidence,
                                   controllableFeaturesNames, controllableFeatureIndices, controllableFeatureDomains,
-                                  optimizationDirections, optimizationScore, 1, "../explainability_plots")
+                                  optimizationDirections, optimizationScore, 1,
+                                  "../explainability_plots")
 
     nsga3Planner = NSGA3Planner(models, targetConfidence, controllableFeatureIndices, controllableFeatureDomains,
                                 optimizationDirections, successScore, optimizationScore)
@@ -150,12 +156,15 @@ if __name__ == '__main__':
         os.remove(f)
 
     testNum = 200
+    evaluated_test_rows = []
+
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
 
         num_reqs_satisfied = 0
         reqs_row = y_test.iloc[rowIndex, :].to_numpy()
+        evaluated_test_rows.append([rowIndex, *row.tolist(), *reqs_row.tolist()])
         num_reqs_satisfied = np.sum(reqs_row)
 
         print(Fore.BLUE + "Test " + str(k) + ":" + Style.RESET_ALL)
@@ -180,9 +189,10 @@ if __name__ == '__main__':
             
             customScore_anchors = optimizationScore(customAdaptation_anchors) if customAdaptation_anchors is not None else None
                     
+            
             for i, req in enumerate(reqs):
                 lime.saveExplanation(lime.explain(limeExplainer, models[i], customAdaptation_anchors),
-                                     path + "/" + str(k) + "_" + req + "_final")
+                                        path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
             print("Best adaptation Anchors:                 " + str(customAdaptation_anchors[0:n_controllableFeatures]))
@@ -197,9 +207,10 @@ if __name__ == '__main__':
         print("-" * 100)
 
         #custom algorithm
+    
         for i, req in enumerate(reqs):
             lime.saveExplanation(lime.explain(limeExplainer, models[i], row),
-                                 path + "/" + str(k) + "_" + req + "_starting")
+                                    path + "/" + str(k) + "_" + req + "_starting")
             plt.close('all')
 
         startTime = time.time()
@@ -210,7 +221,7 @@ if __name__ == '__main__':
         if customAdaptation is not None:
             for i, req in enumerate(reqs):
                 lime.saveExplanation(lime.explain(limeExplainer, models[i], customAdaptation),
-                                     path + "/" + str(k) + "_" + req + "_final")
+                                        path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
             print("Best adaptation:                 " + str(customAdaptation[0:n_controllableFeatures]))
@@ -241,9 +252,10 @@ if __name__ == '__main__':
             
             customScore_wip = optimizationScore(customAdaptation_wip) if customAdaptation_wip is not None else None
                     
+            
             for i, req in enumerate(reqs):
                 lime.saveExplanation(lime.explain(limeExplainer, models[i], customAdaptation_wip),
-                                     path + "/" + str(k) + "_" + req + "_final")
+                                        path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
             print("Best adaptation WIP:                 " + str(customAdaptation_wip[0:n_controllableFeatures]))
@@ -393,6 +405,12 @@ if __name__ == '__main__':
         
 
 
+    evaluated_test_dataset = pd.DataFrame(
+        evaluated_test_rows,
+        columns=["row_index", *featureNames, *reqs],
+    )
+    evaluated_test_dataset.to_csv(evaluatedTestPath, index=False)
+
     results = pd.DataFrame(results, columns=["nsga3_adaptation", "custom_adaptation", "anchors_adaptation", "wip_adaptation",
                                              "nsga3_confidence", "custom_confidence", "anchors_confidence", "wip_confidence",
                                              "nsga3_score", "custom_score", "anchors_score", "wip_score",
@@ -400,10 +418,7 @@ if __name__ == '__main__':
                                              "score_improvement_NSGA_custom[%]", "score_improvement_anchors_custom[%]", "score_improvement_anchors_NSGA[%]", "score_improvement_anchors_WIP[%]",
                                              "nsga3_time", "custom_time", "anchors_time", "wip_time",
                                              "speed-up_custom_NSGA", "speed-up_anchors_NSGA", "speed-up_anchors_custom", "speed-up_WIP_anchors", "iterations_anchors", "iterations_wip"])
-    path = "../results"
-    if not os.path.exists(path):
-        os.makedirs(path)
-    results.to_csv(path + "/results.csv")
+    results.to_csv(resultsDir / "results.csv")
 
     if evaluate:
         evaluateAdaptations(results, featureNames)

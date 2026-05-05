@@ -15,6 +15,36 @@ if os.name == "nt":
 else:
     import fcntl
 
+from pathlib import Path
+
+
+def build_results_dir(dataset_path: str | Path) -> Path:
+    dataset_stem = Path(dataset_path).stem
+    return Path("../results") / dataset_stem
+
+
+def build_explainability_paths(results_dir: str | Path, enabled: bool):
+    if not enabled:
+        return None, None
+
+    plots_dir = Path(results_dir) / "explainability_plots"
+    adaptations_dir = plots_dir / "adaptations"
+    return plots_dir, adaptations_dir
+
+
+def build_evaluated_input_dataset(
+    x_test: pd.DataFrame,
+    y_test: pd.DataFrame,
+    feature_names,
+    req_names,
+    test_num: int,
+) -> pd.DataFrame:
+    evaluated_features = x_test.loc[:, feature_names].head(test_num).reset_index(drop=True)
+    evaluated_requirements = y_test.loc[:, req_names].head(test_num).reset_index(drop=True)
+    evaluated_dataset = pd.concat([evaluated_features, evaluated_requirements], axis=1)
+    evaluated_dataset.insert(0, "row_index", pd.Series(evaluated_dataset.index, dtype="int64"))
+    return evaluated_dataset
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 BUILDER_DIR = PROJECT_ROOT / "MDP_Dataset_Builder"

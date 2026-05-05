@@ -1072,5 +1072,4 @@ class WIPPlanner:
                     break
 
         return adapted_sample, n_iter
-
-        
+    

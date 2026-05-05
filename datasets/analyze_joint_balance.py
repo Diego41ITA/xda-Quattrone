@@ -1,4 +1,3 @@
-import argparse
 import json
 from pathlib import Path
 
@@ -6,6 +5,12 @@ import pandas as pd
 
 
 DEFAULT_TARGET_COLUMNS = ["req_0", "req_1", "req_2", "req_3"]
+INPUT_CSV = Path("datasets/dataset15000_generated.csv")
+OUTPUT_CSV = Path("datasets/dataset15000_balanced_joint.csv")
+REPORT_JSON = Path("datasets/dataset15000_balanced_joint_report.json")
+TARGET_COLUMNS = DEFAULT_TARGET_COLUMNS
+BALANCE_DATASET = True
+RANDOM_SEED = 42
 
 
 def validate_target_columns(df: pd.DataFrame, target_columns: list[str]) -> None:
@@ -98,66 +103,31 @@ def rebalance_joint_distribution(
     return balanced_df, metadata
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Analyze joint class imbalance across req_0..req_3 and optionally create "
-            "an undersampled dataset without adding rows."
-        )
-    )
-    parser.add_argument("--input", type=Path, required=True, help="Input CSV path.")
-    parser.add_argument("--output", type=Path, help="Balanced CSV output path.")
-    parser.add_argument("--report", type=Path, help="JSON report output path.")
-    parser.add_argument(
-        "--target-columns",
-        nargs="+",
-        default=DEFAULT_TARGET_COLUMNS,
-        help="Boolean target columns used to define the joint class.",
-    )
-    parser.add_argument(
-        "--balance",
-        action="store_true",
-        help="Apply automatic joint undersampling using the median class count.",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=42,
-        help="Random seed used for deterministic undersampling.",
-    )
-    return parser.parse_args()
-
-
 def main() -> None:
-    args = parse_args()
-    df = pd.read_csv(args.input)
-    validate_target_columns(df, args.target_columns)
+    df = pd.read_csv(INPUT_CSV)
+    validate_target_columns(df, TARGET_COLUMNS)
 
     balanced_df = None
-    target_count = choose_target_count(compute_joint_counts(df, args.target_columns))
+    target_count = choose_target_count(compute_joint_counts(df, TARGET_COLUMNS))
 
-    if args.balance:
+    if BALANCE_DATASET:
         balanced_df, _ = rebalance_joint_distribution(
             df,
-            target_columns=args.target_columns,
+            target_columns=TARGET_COLUMNS,
             target_count=target_count,
-            seed=args.seed,
+            seed=RANDOM_SEED,
         )
-        output_path = args.output or args.input.with_name(f"{args.input.stem}_balanced_joint.csv")
-        balanced_df.to_csv(output_path, index=False)
+        balanced_df.to_csv(OUTPUT_CSV, index=False)
 
     report = build_report(
         original_df=df,
-        target_columns=args.target_columns,
+        target_columns=TARGET_COLUMNS,
         balanced_df=balanced_df,
         target_count=target_count,
-        seed=args.seed,
+        seed=RANDOM_SEED,
     )
 
-    if args.report:
-        args.report.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    else:
-        print(json.dumps(report, indent=2))
+    REPORT_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":
