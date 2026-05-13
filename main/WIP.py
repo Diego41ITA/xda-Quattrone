@@ -326,9 +326,9 @@ class WIPPlanner:
                 boundary_sample_a = np.zeros((1, feature_number))
                 boundary_sample_b = np.zeros((1, feature_number))
 
-                for k in single_anchor:
-                    a = max(single_anchor[k][0], 0)
-                    b = min(single_anchor[k][1], 100)
+                for k, interval in self.__anchor_feature_ranges(single_anchor, feature_names):
+                    a = max(interval[0], 0)
+                    b = min(interval[1], 100)
                     rand_val = np.random.uniform(a, b)
                     random_sample[0, feature_names.index(k)] = rand_val
                     boundary_sample_a[0, feature_names.index(k)] = a
@@ -433,10 +433,46 @@ class WIPPlanner:
         rest : str
             The rest of the string.
         """
-        quoted_part = a.split("'")[1]
-        rest = a.replace(f"'{quoted_part}'", '').replace("b", '').strip()
+        anchor_text = str(a).strip()
 
-        return quoted_part, rest
+        quoted_match = re.search(r"b?(['\"])(?P<feature>.+?)\1", anchor_text)
+        if quoted_match:
+            quoted_part = quoted_match.group("feature")
+            rest = (
+                anchor_text[: quoted_match.start()]
+                + anchor_text[quoted_match.end() :]
+            ).strip()
+            rest = re.sub(r"\s+", " ", rest)
+            return quoted_part, rest
+
+        for feature_name in sorted(self.feature_names, key=len, reverse=True):
+            feature = (
+                feature_name.decode()
+                if isinstance(feature_name, bytes)
+                else str(feature_name)
+            )
+            feature = feature.strip()
+
+            if feature.startswith("b'") and feature.endswith("'"):
+                feature = feature[2:-1]
+            elif feature.startswith("b\"") and feature.endswith("\""):
+                feature = feature[2:-1]
+            elif (feature.startswith("'") and feature.endswith("'")) or (
+                feature.startswith('"') and feature.endswith('"')
+            ):
+                feature = feature[1:-1]
+
+            if feature and feature in anchor_text:
+                rest = anchor_text.replace(feature, "", 1).strip()
+                rest = re.sub(r"\s+", " ", rest)
+                return feature, rest
+
+        raise ValueError(f"Cannot extract feature name from anchor rule: {a}")
+
+    def __anchor_feature_ranges(self, anchor, feature_names):
+        for feature_name in feature_names:
+            if feature_name in anchor:
+                yield feature_name, anchor[feature_name]
 
     def __parse_range(self, expr: str):
         """
@@ -676,7 +712,7 @@ class WIPPlanner:
                 # ---------- observable ----------
                 for j, f_name in enumerate(observable_features):
 
-                    jj = j + 3
+                    jj = j + 2  # observable features start after controllable features in x
 
                     a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
 

@@ -49,32 +49,30 @@ if __name__ == '__main__':
     # evaluate adaptations
     evaluate = True
 
-    datasetPath = Path("../datasets/dataset5000_balanced_joint.csv")
+    datasetPath = Path("../datasets/uav.csv")
     resultsDir = build_results_dir(datasetPath)
     trainPath = resultsDir / "X_train.csv"
     evaluatedTestPath = resultsDir / "X_test_evaluated.csv"
     resultsDir.mkdir(parents=True, exist_ok=True)
 
     ds = pd.read_csv(datasetPath)
-    featureNames = ["cruise speed",
-                    "image resolution",
-                    "illuminance",
-                    "controls responsiveness",
-                    "power",
-                    "smoke intensity",
-                    "obstacle size",
-                    "obstacle distance",
-                    "firm obstacle"]
+    featureNames = ['formation', 'flying_speed', 'countermeasure', 'weather', 'day_time', 'threat_range', '#threats'] #uav
+    # featureNames = ['cruise speed','image resolution','illuminance','controls responsiveness','power',
+    # 'smoke intensity','obstacle size','obstacle distance','firm obstacle'] #robot
+    #featureNames = ['car_speed','p_x','p_y','orientation','weather','road_shape'] #drive
     controllableFeaturesNames = featureNames[0:3]
     externalFeaturesNames = featureNames[3:7]
     controllableFeatureIndices = [0, 1, 2]
+    # controllableFeaturesNames = featureNames[0:4] #robot
+    # externalFeaturesNames = featureNames[4:9] #robot
+    # controllableFeatureIndices = [0, 1, 2, 3] #robot
 
     # for simplicity, we consider all the ideal points to be 0 or 100
     # so that we just need to consider ideal directions instead
     # -1 => minimize, 1 => maximize
     optimizationDirections = [1, -1, -1]
 
-    reqs = ["req_0", "req_1", "req_2", "req_3"]
+    reqs = ["req_0", "req_1", "req_2", "req_3", "req_4", "req_5", "req_6", "req_7", "req_8", "req_9", "req_10", "req_11"]
 
     n_reqs = len(reqs)
     n_neighbors = 10
