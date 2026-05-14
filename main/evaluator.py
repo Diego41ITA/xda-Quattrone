@@ -13,7 +13,7 @@ from model.ModelConstructor import constructModel
 import explainability_techniques.LIME as lime
 from CustomPlanner import CustomPlanner
 from NSGA3Planner import NSGA3Planner
-from util import vecPredictProba, evaluateAdaptations, guard_time_value
+from util import vecPredictProba, evaluateAdaptations, guard_time_value, validateBuilderFeatureNames
 from AnchorsPlanner import AnchorsPlanner
 from WIP import WIPPlanner
 from util import build_results_dir, build_explainability_paths
@@ -32,6 +32,12 @@ def successScore(adaptation, reqClassifiers, targetSuccessProba):
 def optimizationScore(adaptation):
     return 400 - (100 - adaptation[0] + adaptation[1] + adaptation[2] + adaptation[3])
 
+
+def clamp_controllable_features(adaptation, n_controllable_features, lower_bound=0, upper_bound=100):
+    for index in range(n_controllable_features):
+        adaptation[index] = min(max(adaptation[index], lower_bound), upper_bound)
+    return adaptation
+
 # ====================================================================================================== #
 # IMPORTANT: everything named as custom in the code refers to the XDA approach                           #
 #            everything named as confidence in the code refers to the predicted probabilities of success #
@@ -48,8 +54,9 @@ if __name__ == '__main__':
 
     # evaluate adaptations
     evaluate = True
+    mdpDomain = "UAV_v02"
 
-    datasetPath = Path("../datasets/uav.csv")
+    datasetPath = Path("../datasets/uavv3.csv")
     resultsDir = build_results_dir(datasetPath)
     trainPath = resultsDir / "X_train.csv"
     evaluatedTestPath = resultsDir / "X_test_evaluated.csv"
@@ -60,6 +67,9 @@ if __name__ == '__main__':
     # featureNames = ['cruise speed','image resolution','illuminance','controls responsiveness','power',
     # 'smoke intensity','obstacle size','obstacle distance','firm obstacle'] #robot
     #featureNames = ['car_speed','p_x','p_y','orientation','weather','road_shape'] #drive
+    if evaluate:
+        validateBuilderFeatureNames(featureNames, mdp_domain=mdpDomain)
+
     controllableFeaturesNames = featureNames[0:3]
     externalFeaturesNames = featureNames[3:7]
     controllableFeatureIndices = [0, 1, 2]
@@ -114,7 +124,7 @@ if __name__ == '__main__':
     
     wipPlanner = WIPPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames, controllableFeaturesNames, 
                                 X_train, "../explainability_plots", controllableFeatureIndices, controllableFeatureDomains
-                                    , optimizationDirections, optimizationScore, 1, targetConfidence, build_explanations=False, explanations_csv="anchors_explanations.csv")
+                                    , optimizationDirections, optimizationScore, 1, targetConfidence, build_explanations=False)
     
     # create lime explainer
     limeExplainer = lime.createLimeExplainer(X_train)
@@ -177,13 +187,7 @@ if __name__ == '__main__':
         anchorsTime = endTime - startTime
 
         if customAdaptation_anchors is not None:
-            #keep the features values between 0 and 100
-            for ad in range(len(customAdaptation_anchors)):
-                ca = customAdaptation_anchors[ad]
-                if ca>100:
-                    customAdaptation_anchors[ad] = 100
-                elif ca<0:
-                    customAdaptation_anchors[ad] = 0
+            clamp_controllable_features(customAdaptation_anchors, n_controllableFeatures)
             
             customScore_anchors = optimizationScore(customAdaptation_anchors) if customAdaptation_anchors is not None else None
                     
@@ -240,13 +244,7 @@ if __name__ == '__main__':
         wipTime = endTime - startTime
 
         if customAdaptation_wip is not None:
-            #keep the features values between 0 and 100
-            for ad in range(len(customAdaptation_wip)):
-                ca = customAdaptation_wip[ad]
-                if ca>100:
-                    customAdaptation_wip[ad] = 100
-                elif ca<0:
-                    customAdaptation_wip[ad] = 0
+            clamp_controllable_features(customAdaptation_wip, n_controllableFeatures)
             
             customScore_wip = optimizationScore(customAdaptation_wip) if customAdaptation_wip is not None else None
                     
@@ -419,7 +417,12 @@ if __name__ == '__main__':
     results.to_csv(resultsDir / "results.csv")
 
     if evaluate:
-        evaluateAdaptations(results, featureNames)
+        evaluateAdaptations(
+            results,
+            featureNames,
+            results_dir=resultsDir,
+            mdp_domain=mdpDomain,
+        )
 
     programEndTime = time.time()
     totalExecutionTime = programEndTime - programStartTime

@@ -21,7 +21,7 @@ from typing import Optional, Tuple
 import itertools
 import time
 import CustomPlanner
-import ast
+from pathlib import Path
 
 class WIPPlanner:
     """
@@ -72,7 +72,7 @@ class WIPPlanner:
                  controllableFeaturesNames, X, plotsPath,
                  controllableFeatureIndices, controllableFeatureDomains,
                  optimizationDirections, optimizationScoreFunction, delta, targetConfidence, build_explanations,
-                 explanations_csv):
+                 ):
         """
         Initializes the AnchorsPlanner by training requirement explainers, 
         generating anchor-based explanations, and filtering them by confidence.
@@ -147,6 +147,19 @@ class WIPPlanner:
         self.controllableFeatureIndices = np.array(controllableFeatureIndices)
         self.controllableFeaturesNames = controllableFeaturesNames
         self.build_explanations = build_explanations
+        self.training_dataset = training_dataset
+        self.anchor_explanations_path = (
+            Path(__file__).resolve().parent
+            / "polytopes"
+            / "uav"
+            / "anchors_explanations.csv"
+        )
+        self.anchor_rules_path = (
+            Path(__file__).resolve().parent
+            / "polytopes"
+            / "uav"
+            / "anchors_rules.csv"
+        )
         self.observableFeatureIndices = [i for i in range(feature_number) if i not in controllableFeatureIndices]
         self.observableFeaturesNames = [feature_names[i] for i in self.observableFeatureIndices]
         self.controllableFeatureDomains = controllableFeatureDomains
@@ -315,43 +328,7 @@ class WIPPlanner:
 
         self.explanations = explanations_reordered
 
-        # Step 6: Filter anchors based on average predicted probabilities
-        number_of_random_points = 10
-        coefficients_to_remove = []
-
-        for n, single_anchor in enumerate(explanations_reordered):
-            single_anchor_mean = np.zeros((1, len(reqNames)))
-            for _ in range(number_of_random_points):
-                random_sample = np.zeros((1, feature_number))
-                boundary_sample_a = np.zeros((1, feature_number))
-                boundary_sample_b = np.zeros((1, feature_number))
-
-                for k, interval in self.__anchor_feature_ranges(single_anchor, feature_names):
-                    a = max(interval[0], 0)
-                    b = min(interval[1], 100)
-                    rand_val = np.random.uniform(a, b)
-                    random_sample[0, feature_names.index(k)] = rand_val
-                    boundary_sample_a[0, feature_names.index(k)] = a
-                    boundary_sample_b[0, feature_names.index(k)] = b
-
-                probs = vecPredictProba(reqClassifiers, random_sample)
-                single_anchor_mean += probs
-
-            # Add boundary samples
-            single_anchor_mean += vecPredictProba(reqClassifiers, boundary_sample_a)
-            single_anchor_mean += vecPredictProba(reqClassifiers, boundary_sample_b)
-            single_anchor_mean /= (number_of_random_points + 2)
-
-            # Remove if any requirement probability < 0.5
-            if np.any(single_anchor_mean < 0.5):
-                coefficients_to_remove.append(n)
-
-        # Keep only anchors with sufficient confidence
-        self.explanations = [
-            self.explanations[i] for i in range(len(self.explanations)) if i not in coefficients_to_remove
-        ]
-
-        # Step 7: Save CSV outputs
+        # Step 6: Save CSV outputs
         # a) Anchors rules
         csv_data = []
         for sample_index in selected_samples:
@@ -365,11 +342,12 @@ class WIPPlanner:
                 row[f"real_{req}"] = int(datasets[i].labels_train[sample_index])
             csv_data.append(row)
 
-        pd.DataFrame(csv_data).to_csv("anchors_rules.csv", index=False)
-        print("anchors_rules.csv saved successfully!")
+        self.anchor_rules_path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(csv_data).to_csv(self.anchor_rules_path, index=False)
+        print(f"{self.anchor_rules_path} saved successfully!")
 
         # b) Anchors explanations
-        with open("anchors_explanations.csv", "w", newline="") as f:
+        with open(self.anchor_explanations_path, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["n_satisfied_reqs", "satisfied_reqs"] + feature_names)
             for idx, exp in zip(selected_samples, self.explanations):
@@ -380,7 +358,9 @@ class WIPPlanner:
                     row.append(str(exp[feat]))
                 writer.writerow(row)
 
-        print(f"anchors_explanations.csv saved successfully with {len(self.explanations)} samples!")
+        print(
+            f"{self.anchor_explanations_path} saved successfully with {len(self.explanations)} samples!"
+        )
 
     def __load_anchor_explanations(self, csv_path, min_satisfied_reqs):
         """
@@ -410,14 +390,16 @@ class WIPPlanner:
 
                 for feat in self.feature_names:
                     # Interval stored as string: "(a, b, False, False)"
-                    anchor[feat] = eval(row[feat])
+                    anchor[feat] = eval(
+                        row[feat], {"__builtins__": {}}, {"inf": inf}
+                    )
                 explanations.append(anchor)
 
         self.explanations = explanations
 
         print(f"Loaded {len(self.explanations)} anchor explanations from {csv_path} "
             f"with n_satisfied_reqs >= {min_satisfied_reqs}")
-        
+
     def __get_anchor(self, a)-> tuple:
         """
         Function to separate the name of the feature from the ranges.
@@ -890,7 +872,7 @@ class WIPPlanner:
         - Adaptation aims to increase model confidence beyond the threshold.
         """
 
-        self.__load_anchor_explanations("anchors_explanations.csv", nreqs)
+        self.__load_anchor_explanations(self.anchor_explanations_path, nreqs)
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
 
