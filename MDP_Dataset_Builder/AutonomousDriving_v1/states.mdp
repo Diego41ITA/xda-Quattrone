@@ -1,0 +1,6 @@
+S0; idle; CONTROLLABLE; a, 0.001, S1; a, 0.999, S2;
+S1; outoflane; OBSERVABLE; c, 1.0, S1;
+S2; driving; OBSERVABLE; b, 0.98, S3; b, 0.015, S4; b, 0.005, S5;
+S3; distok-inlane; OBSERVABLE; c, 1.0, S3;
+S4; distok-outoflane; OBSERVABLE; d, 1.0, S4;
+S5; distnotok; OBSERVABLE; e, 1.0, S5;

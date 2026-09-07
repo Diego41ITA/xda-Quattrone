@@ -3,6 +3,7 @@ import os
 import glob
 import time
 import warnings
+import shutil
 from pathlib import Path
 import matplotlib
 import pandas as pd
@@ -13,7 +14,14 @@ from model.ModelConstructor import constructModel
 import explainability_techniques.LIME as lime
 from CustomPlanner import CustomPlanner
 from NSGA3Planner import NSGA3Planner
-from util import vecPredictProba, evaluateAdaptations, guard_time_value, validateBuilderFeatureNames
+from util import (
+    vecPredictProba,
+    evaluateAdaptations,
+    get_evaluator_domain_config,
+    guard_time_value,
+    validate_domain_planner_config,
+    validateBuilderFeatureNames,
+)
 from AnchorsPlanner import AnchorsPlanner
 from WIP import WIPPlanner
 from util import build_results_dir, build_explainability_paths
@@ -26,11 +34,6 @@ np.random.seed(42)
 # success score function (based on the signed distance with respect to the target success probabilities)
 def successScore(adaptation, reqClassifiers, targetSuccessProba):
     return np.sum(vecPredictProba(reqClassifiers, [adaptation])[0] - targetSuccessProba)
-
-
-# provided optimization score function (based on the ideal controllable feature assignment)
-def optimizationScore(adaptation):
-    return 400 - (100 - adaptation[0] + adaptation[1] + adaptation[2] + adaptation[3])
 
 
 def clamp_controllable_features(adaptation, n_controllable_features, lower_bound=0, upper_bound=100):
@@ -52,43 +55,64 @@ if __name__ == '__main__':
     # suppress all warnings
     warnings.filterwarnings("ignore")
 
-    # evaluate adaptations
+    # If True, the generated adaptations are post-processed through
+    # MDP_Dataset_Builder to obtain environment-level outcome CSVs
+    # (`customDataset.csv`, `nsga3Dataset.csv`, ...). If False, the evaluator
+    # still computes planner-side metrics but skips builder-based validation.
     evaluate = True
-    mdpDomain = "UAV_v02"
+    # Active domain profile. This controls dataset path, feature names,
+    # controllable feature indices, optimization directions, and requirement
+    # names via `get_evaluator_domain_config(...)`.
+    mdpDomain = "RescueRobot"
+    #mdpDomain = "UAV_v02"
+    domainConfig = get_evaluator_domain_config(mdpDomain)
+    validate_domain_planner_config(domainConfig)
 
-    datasetPath = Path("../datasets/uavv3.csv")
+    datasetPath = domainConfig["dataset_path"]
     resultsDir = build_results_dir(datasetPath)
     trainPath = resultsDir / "X_train.csv"
     evaluatedTestPath = resultsDir / "X_test_evaluated.csv"
     resultsDir.mkdir(parents=True, exist_ok=True)
 
     ds = pd.read_csv(datasetPath)
-    featureNames = ['formation', 'flying_speed', 'countermeasure', 'weather', 'day_time', 'threat_range', '#threats'] #uav
-    # featureNames = ['cruise speed','image resolution','illuminance','controls responsiveness','power',
-    # 'smoke intensity','obstacle size','obstacle distance','firm obstacle'] #robot
-    #featureNames = ['car_speed','p_x','p_y','orientation','weather','road_shape'] #drive
+    featureNames = domainConfig["feature_names"]
     if evaluate:
         validateBuilderFeatureNames(featureNames, mdp_domain=mdpDomain)
 
-    controllableFeaturesNames = featureNames[0:3]
-    externalFeaturesNames = featureNames[3:7]
-    controllableFeatureIndices = [0, 1, 2]
-    # controllableFeaturesNames = featureNames[0:4] #robot
-    # externalFeaturesNames = featureNames[4:9] #robot
-    # controllableFeatureIndices = [0, 1, 2, 3] #robot
+    controllableFeaturesNames = domainConfig["controllable_feature_names"]
+    externalFeaturesNames = domainConfig["external_feature_names"]
+    controllableFeatureIndices = domainConfig["controllable_feature_indices"]
 
     # for simplicity, we consider all the ideal points to be 0 or 100
     # so that we just need to consider ideal directions instead
     # -1 => minimize, 1 => maximize
-    optimizationDirections = [1, -1, -1]
+    optimizationDirections = domainConfig["optimization_directions"]
+    maxOptimizationScore = 100 * len(optimizationDirections)
 
-    reqs = ["req_0", "req_1", "req_2", "req_3", "req_4", "req_5", "req_6", "req_7", "req_8", "req_9", "req_10", "req_11"]
+    # provided optimization score function (based on the ideal controllable feature assignment)
+    def optimizationScore(adaptation):
+        score = 0
+        for index, direction in enumerate(optimizationDirections):
+            if direction == 1:
+                score += 100 - adaptation[index]
+            else:
+                score += adaptation[index]
+        return score
 
+    reqs = domainConfig["reqs"]
+    
     n_reqs = len(reqs)
+    # KNN neighborhood size used by the PDP-driven planners to pick local
+    # contexts when building/refining adaptations.
     n_neighbors = 10
+    # Number of top candidate solutions retained by CustomPlanner after its
+    # initial candidate generation/ranking phase.
     n_startingSolutions = 10
     n_controllableFeatures = len(controllableFeaturesNames)
 
+    # Per-requirement confidence threshold used by the planners as the target
+    # feasibility level. An adaptation is considered valid only if every
+    # requirement confidence reaches this level.
     targetConfidence = np.full((1, n_reqs), 0.8)[0]
 
     # split the dataset
@@ -124,7 +148,9 @@ if __name__ == '__main__':
     
     wipPlanner = WIPPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames, controllableFeaturesNames, 
                                 X_train, "../explainability_plots", controllableFeatureIndices, controllableFeatureDomains
-                                    , optimizationDirections, optimizationScore, 1, targetConfidence, build_explanations=False)
+                                    , optimizationDirections, optimizationScore, 1, targetConfidence, build_explanations=False,
+                                    n_neighbors=n_neighbors, n_startingSolutions=n_startingSolutions,
+                                    max_fallback_combinations=2000)
     
     # create lime explainer
     limeExplainer = lime.createLimeExplainer(X_train)
@@ -155,25 +181,32 @@ if __name__ == '__main__':
     wipDataset = []
     anchorsDataset = []
 
-    path = "../explainability_plots/adaptations"
-    if not os.path.exists(path):
-        os.makedirs(path)
+    # Start each run from a clean explainability output folder so plots from
+    # previous domains/runs do not remain mixed with the current execution.
+    explainabilityRoot = Path("../explainability_plots")
+    if explainabilityRoot.exists():
+        shutil.rmtree(explainabilityRoot)
+    (explainabilityRoot / "adaptations").mkdir(parents=True, exist_ok=True)
+    path = str(explainabilityRoot / "adaptations")
 
-    files = glob.glob(path + "/*")
-    for f in files:
-        os.remove(f)
-
-    testNum = 200
+    # Number of held-out test rows evaluated in this run.
+    testNum = 100
     evaluated_test_rows = []
 
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
 
+        # Number of ground-truth satisfied requirements for this test sample.
+        # This value is passed to WIP as `nreqs` and is used to load only anchor
+        # polytopes generated from training samples satisfying at least this
+        # many requirements.
         num_reqs_satisfied = 0
         reqs_row = y_test.iloc[rowIndex, :].to_numpy()
         evaluated_test_rows.append([rowIndex, *row.tolist(), *reqs_row.tolist()])
         num_reqs_satisfied = np.sum(reqs_row)
+
+        num_reqs_satisfied = 4
 
         print(Fore.BLUE + "Test " + str(k) + ":" + Style.RESET_ALL)
         print("Row " + str(rowIndex) + ":\n" + str(row))
@@ -199,7 +232,7 @@ if __name__ == '__main__':
 
             print("Best adaptation Anchors:                 " + str(customAdaptation_anchors[0:n_controllableFeatures]))
             print("Model confidence:                " + str(customConfidence_anchors))
-            print("Adaptation score:                " + str(customScore_anchors) + " / 400")
+            print("Adaptation score:                " + str(customScore_anchors) + f" / {maxOptimizationScore}")
             print("Number of iterations:            " + str(n_iter_anchors))
         else:
             print("No adaptation found")
@@ -228,7 +261,7 @@ if __name__ == '__main__':
 
             print("Best adaptation:                 " + str(customAdaptation[0:n_controllableFeatures]))
             print("Model confidence:                " + str(customConfidence))
-            print("Adaptation score:                " + str(customScore) + " / 400")
+            print("Adaptation score:                " + str(customScore) + f" / {maxOptimizationScore}")
         else:
             print("No adaptation found")
             customScore = None
@@ -238,6 +271,9 @@ if __name__ == '__main__':
 
         # wip algorithm
         startTime = time.time()
+        # WIP receives `num_reqs_satisfied` as a dynamic anchor-loading
+        # threshold. This makes the planner restrict its polytope search to
+        # anchors built from sufficiently good training points.
         customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row, num_reqs_satisfied)
         endTime = time.time()
         
@@ -256,7 +292,7 @@ if __name__ == '__main__':
 
             print("Best adaptation WIP:                 " + str(customAdaptation_wip[0:n_controllableFeatures]))
             print("Model confidence:                " + str(customConfidence_wip))
-            print("Adaptation score:                " + str(customScore_wip) + " / 400")
+            print("Adaptation score:                " + str(customScore_wip) + f" / {maxOptimizationScore}")
             print("Number of iterations:            " + str(n_iter_wip))
         else:
             print("No adaptation found")

@@ -45,6 +45,69 @@ def load_domain_config(domain=None, builder_dir=None):
     raise FileNotFoundError(f"Could not find a builder config for domain {domain!r}")
 
 
+def install_domain_aware_ss_variable_importer(helpers_module):
+    import importlib
+    import importlib.util
+    import os
+    from pathlib import Path
+
+    def semantic_space_variables_importer(ss_variables_folder_path) -> list:
+        if ss_variables_folder_path is None:
+            return []
+
+        assert isinstance(ss_variables_folder_path, str)
+
+        semantic_space_variables = []
+        folder_path = Path(ss_variables_folder_path)
+        files = os.listdir(folder_path)
+        files.sort()
+        for filename in files:
+            if (
+                filename.endswith(".py")
+                and not filename.startswith("._")
+                and filename != "config.py"
+                and filename != "__init__.py"
+            ):
+                try:
+                    module_name = filename[:-3]
+                    if folder_path.is_absolute():
+                        module_spec = importlib.util.spec_from_file_location(
+                            f"_domain_ss_vars_{folder_path.name}_{module_name}",
+                            folder_path / filename,
+                        )
+                        if module_spec is None or module_spec.loader is None:
+                            raise ImportError(f"Cannot import semantic space module {filename}")
+                        module = importlib.util.module_from_spec(module_spec)
+                        module_spec.loader.exec_module(module)
+                    else:
+                        module_path = f"{ss_variables_folder_path}.{module_name}"
+                        module_path = module_path.replace("./", "")
+                        module_path = module_path.replace("/", ".")
+                        module_path = module_path.replace("\\", ".")
+                        module = importlib.import_module(module_path)
+                    for variable in module.SemanticSpaceVariable:
+                        semantic_space_variables.append(
+                            helpers_module.SemanticSpaceVariable(variable)
+                        )
+                except (
+                    SyntaxError,
+                    ImportError,
+                    AttributeError,
+                    KeyError,
+                    NameError,
+                    IndexError,
+                    TypeError,
+                ) as err:
+                    print("ERROR in", filename)
+                    import traceback
+
+                    traceback.print_exception(err, err, err.__traceback__)
+
+        return semantic_space_variables
+
+    helpers_module.semantic_space_variables_importer = semantic_space_variables_importer
+
+
 def configure_mdp_simulator(domain, simulator=None, enums_module=None):
     simulator = simulator if simulator is not None else mdp_simulator
     if simulator is None:
@@ -52,6 +115,9 @@ def configure_mdp_simulator(domain, simulator=None, enums_module=None):
 
     if enums_module is None:
         from mdp_simulator.utils import enums as enums_module
+    from mdp_simulator.utils import helpers as helpers_module
+
+    install_domain_aware_ss_variable_importer(helpers_module)
 
     simulator.config.FOLDER_NAME = f"./{domain}"
     simulator.config.DEBUG_LEVEL = enums_module.LogTypes.ERROR

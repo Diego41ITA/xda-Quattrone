@@ -14,7 +14,7 @@ from anchor import anchor_tabular
 import pandas as pd
 from multiprocessing import Pool, cpu_count
 
-from util import vecPredictProba
+from util import resolve_anchor_output_paths, vecPredictProba, cartesian_product
 
 from typing import Optional, Tuple
 
@@ -72,10 +72,15 @@ class WIPPlanner:
                  controllableFeaturesNames, X, plotsPath,
                  controllableFeatureIndices, controllableFeatureDomains,
                  optimizationDirections, optimizationScoreFunction, delta, targetConfidence, build_explanations,
+                 n_neighbors=5, n_startingSolutions=5, max_fallback_combinations=2000,
                  ):
         """
-        Initializes the AnchorsPlanner by training requirement explainers, 
-        generating anchor-based explanations, and filtering them by confidence.
+        Initializes the WIP planner.
+
+        WIP combines two adaptation paths:
+        1. an anchor/polytope-driven path based on explanations saved on disk;
+        2. a PDP-based fallback used when the anchor path cannot provide a
+           suitable observable polytope for the current sample.
 
         Parameters
         ----------
@@ -93,32 +98,49 @@ class WIPPlanner:
             Number of input features in the dataset.
         feature_names : list of str
             Names of all features (ordered by index).
+        controllableFeaturesNames : list of str
+            Ordered names of the controllable features, i.e. the only features
+            this planner is allowed to modify.
+        X : pandas.DataFrame
+            Training feature matrix used to fit the KNN retriever and to compute
+            the per-feature PDPs and summary PDPs.
+        plotsPath : str or None
+            Base path where PDP plots are saved. If `None`, plot export is
+            skipped.
         controllableFeatureIndices : list of int
             Indices of the features that are controllable (modifiable by the planner).
         controllableFeatureDomains : np.ndarray of shape (n_controllable, 2)
             Domain boundaries for each controllable feature, typically in the format 
             ``[[min_0, max_0], [min_1, max_1], ...]``.
+        optimizationDirections : list[int]
+            Direction of improvement for each controllable feature:
+            `1` means increase the feature, `-1` means decrease it.
+        optimizationScoreFunction : callable
+            Score used by the local optimization stages when choosing better
+            feasible adaptations.
+        delta : float
+            Greedy step size used by the PDP fallback. Each accepted fallback
+            move changes one controllable feature by `delta` in the configured
+            optimization direction.
+        targetConfidence : np.ndarray
+            Per-requirement confidence threshold used internally to determine
+            whether an adaptation is valid.
+        build_explanations : bool
+            Controls whether anchor explanations and polytope CSVs are generated
+            during initialization.
+            - `True`: regenerate explanations/polytopes and save them to disk.
+            - `False`: do not regenerate them; `evaluate_sample()` will later
+              try to read the existing CSV files from disk.
 
         Notes
         -----
-        The initialization procedure performs the following key steps:
+        The initialization procedure stores planner metadata, fits a KNN model
+        used only for neighbor retrieval, computes PDPs/summary PDPs, and
+        optionally builds anchor explanations to be reused later.
 
-        1. Loads the dataset and initializes an `AnchorTabularExplainer` for each requirement.
-        2. Compares classifier predictions with ground-truth labels to compute:
-            - True positives and negatives
-            - False positives and negatives
-            - Misclassified samples
-        3. Generates anchor explanations for all samples that satisfy all requirements.
-        4. Intersects anchor rules across requirements and converts them to numeric intervals.
-        5. Reorders the anchors to include all features, filling missing ones with 
-           unbounded intervals ``(-inf, inf)``.
-        6. Samples random points within anchor-defined intervals to estimate 
-           requirement satisfaction probabilities.
-        7. Removes anchors whose average predicted confidence is below 0.5.
-
-        At the end of initialization, the `explanations` attribute contains the 
-        final filtered anchors corresponding to high-confidence, multi-requirement 
-        samples in the training data.
+        Note that `build_explanations=False` does not disable the anchor logic:
+        it only skips generation at construction time and assumes the anchor CSVs
+        already exist on disk.
 
         Examples
         --------
@@ -146,20 +168,15 @@ class WIPPlanner:
         self.anchorsConfidence = anchorsConfidence
         self.controllableFeatureIndices = np.array(controllableFeatureIndices)
         self.controllableFeaturesNames = controllableFeaturesNames
+        self.externalFeatureIndices = np.delete(
+            np.array(range(feature_number)), controllableFeatureIndices
+        )
         self.build_explanations = build_explanations
         self.training_dataset = training_dataset
-        self.anchor_explanations_path = (
-            Path(__file__).resolve().parent
-            / "polytopes"
-            / "uav"
-            / "anchors_explanations.csv"
-        )
-        self.anchor_rules_path = (
-            Path(__file__).resolve().parent
-            / "polytopes"
-            / "uav"
-            / "anchors_rules.csv"
-        )
+        (
+            self.anchor_explanations_path,
+            self.anchor_rules_path,
+        ) = resolve_anchor_output_paths(training_dataset)
         self.observableFeatureIndices = [i for i in range(feature_number) if i not in controllableFeatureIndices]
         self.observableFeaturesNames = [feature_names[i] for i in self.observableFeatureIndices]
         self.controllableFeatureDomains = controllableFeatureDomains
@@ -168,6 +185,9 @@ class WIPPlanner:
         self.optimizationScoreFunction = optimizationScoreFunction
         self.delta = delta
         self.targetConfidence = targetConfidence
+        self.n_neighbors = max(1, int(n_neighbors))
+        self.n_startingSolutions = max(1, int(n_startingSolutions))
+        self.max_fallback_combinations = max(1, int(max_fallback_combinations))
 
         self.explainer = []
         self.explanations = []
@@ -206,7 +226,10 @@ class WIPPlanner:
                 pdp.multiplyPdps(self.pdps[i], f"{path}/{feature}.png")
             )
         
-        # Build or load anchor explanations
+        # `build_explanations=True` means "generate/update anchor explanations
+        # and polytope CSV files now". If it is False, initialization skips the
+        # generation step and later evaluation will reuse the CSV files already
+        # available on disk.
         if self.build_explanations:
             self.__build_anchor_explanations(
                 training_dataset,
@@ -257,9 +280,12 @@ class WIPPlanner:
                 )
             )
 
-        # Step 3: Select samples that satisfy at least K requirements
+        # Step 3: select training samples that satisfy at least K requirements.
+        # K is the minimum number of predicted satisfied requirements required
+        # for a sample to contribute anchor rules. Lower K yields more anchors;
+        # higher K yields fewer but typically stronger anchors.
         n_samples = datasets[0].train.shape[0]
-        K = 2  # minimum requirements to consider
+        K = 12
         pred_matrix = np.zeros((n_samples, len(reqNames)), dtype=int)
         for i in range(len(reqNames)):
             pred_matrix[:, i] = reqClassifiers[i].predict(datasets[i].train)
@@ -366,6 +392,16 @@ class WIPPlanner:
         """
         Loads anchor explanations from CSV and reconstructs self.explanations.
         Only rows with n_satisfied_reqs >= min_satisfied_reqs are loaded.
+
+        Parameters
+        ----------
+        csv_path : str or Path
+            Path to the CSV file previously generated by
+            `__build_anchor_explanations()`.
+        min_satisfied_reqs : int
+            Runtime filter applied when loading polytopes. Only anchors produced
+            from training samples satisfying at least this many requirements are
+            kept for the current evaluation.
         """
 
         import os
@@ -381,7 +417,8 @@ class WIPPlanner:
         explanations = []
 
         for _, row in df.iterrows():
-            # Controllo del numero di requisiti soddisfatti
+            # Keep only anchors generated from sufficiently good training
+            # samples, measured as number of satisfied requirements.
             if row.get("n_satisfied_reqs", 0) >= min_satisfied_reqs:
                 anchor = {}
 
@@ -740,22 +777,19 @@ class WIPPlanner:
             min_dist_index_observable
         )
 
-    def _optimize_pdp_greedy_step(
-        self,
-        adaptation,
-        confidence,
-        is_valid_adaptation,
-        neighbor_index,
-        excluded_features,
-        temp_excluded_features,
-    ):
+    def optimizeScoreStep(self, adaptation, confidence, isValidAdaptation,
+                          neighborIndex, excludedFeatures, tempExcludedFeatures):
+        """
+        Single local PDP-guided score optimization step copied from
+        ``CustomPlanner`` and used by the WIP fallback.
+        """
         feature_index = None
         controllable_index = None
         min_confidence_loss = None
 
         for i, index in enumerate(self.controllableFeatureIndices):
-            if i not in excluded_features and i not in temp_excluded_features:
-                slope = pdp.getSlope(self.summaryPdps[i], adaptation[index], neighbor_index)
+            if i not in excludedFeatures and i not in tempExcludedFeatures:
+                slope = pdp.getSlope(self.summaryPdps[i], adaptation[index], neighborIndex)
                 confidence_loss = slope * self.optimizationDirections[i]
                 if min_confidence_loss is None or confidence_loss < min_confidence_loss:
                     feature_index = index
@@ -763,7 +797,7 @@ class WIPPlanner:
                     min_confidence_loss = confidence_loss
 
         if feature_index is None:
-            return np.copy(adaptation), np.copy(confidence), False
+            return None, None
 
         new_adaptation = np.copy(adaptation)
         new_adaptation[feature_index] += self.optimizationDirections[controllable_index] * self.delta
@@ -773,63 +807,184 @@ class WIPPlanner:
 
         if new_adaptation[feature_index] < feature_min:
             new_adaptation[feature_index] = feature_min
-            excluded_features.append(controllable_index)
+            excludedFeatures.append(controllable_index)
         elif new_adaptation[feature_index] > feature_max:
             new_adaptation[feature_index] = feature_max
-            excluded_features.append(controllable_index)
+            excludedFeatures.append(controllable_index)
 
         new_confidence = vecPredictProba(self.reqClassifiers, [new_adaptation])[0]
 
-        if (is_valid_adaptation and (new_confidence < self.targetConfidence).any()) or (
-            not is_valid_adaptation and (new_confidence < confidence).any()
-        ):
-            temp_excluded_features.append(controllable_index)
-            return np.copy(adaptation), np.copy(confidence), False
+        if (isValidAdaptation and (new_confidence < self.targetConfidence).any()) \
+                or (not isValidAdaptation and (new_confidence < confidence).any()):
+            new_adaptation = np.copy(adaptation)
+            new_confidence = np.copy(confidence)
+            tempExcludedFeatures.append(controllable_index)
+        else:
+            tempExcludedFeatures.clear()
 
-        temp_excluded_features.clear()
-        return new_adaptation, new_confidence, True
+        return new_adaptation, new_confidence
 
     def findPdpFallbackAdaptation(self, sample, threshold=0.8, max_steps=1000):
-        adaptation = np.copy(sample)
-        confidence = vecPredictProba(self.reqClassifiers, [adaptation])[0]
-        n_controllable_features = len(self.controllableFeatureIndices)
+        """
+        PDP fallback copied from ``CustomPlanner.findAdaptation``.
 
-        excluded_features = []
-        temp_excluded_features = []
-        calls = 0
-        n_iter = 0
+        The anchor/polytope path remains the primary WIP path. When that path
+        cannot provide a usable observable polytope, this method runs the same
+        PDP-based candidate generation, ranking, and refinement pipeline used
+        by ``CustomPlanner``.
+        """
+        n_controllableFeatures = len(self.controllableFeatureIndices)
 
-        neighbor_index = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+        neighbors = np.ravel(self.knn.kneighbors([sample], self.n_neighbors, False))
 
-        while len(excluded_features) + len(temp_excluded_features) < n_controllable_features and n_iter < max_steps:
-            if calls >= 10:
-                neighbor_index = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
-                calls = 0
+        adaptations = [sample]
+        for i in range(self.n_neighbors):
+            neighborIndex = neighbors[i]
+            adaptation = np.copy(sample)
 
-            is_valid_adaptation = (confidence >= self.targetConfidence).all()
-            new_adaptation, new_confidence, moved = self._optimize_pdp_greedy_step(
-                adaptation,
-                confidence,
-                is_valid_adaptation,
-                neighbor_index,
-                excluded_features,
-                temp_excluded_features,
-            )
+            recalculateNeighbor = False
+            excludedFeatures = []
+            while len(excludedFeatures) < n_controllableFeatures:
+                if recalculateNeighbor:
+                    neighborIndex = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+                recalculateNeighbor = True
 
-            n_iter += 1
-            calls += 1
+                maxYVals = [(j, pdp.getMaxOfLine(self.summaryPdps[j], neighborIndex))
+                            for j in range(n_controllableFeatures)]
+                maxYVals = sorted(maxYVals, key=lambda val: val[1], reverse=True)
 
-            if moved:
-                adaptation = new_adaptation
-                confidence = new_confidence
+                for val in maxYVals:
+                    controllableIndex = val[0]
+                    if controllableIndex not in excludedFeatures:
+                        maximals = pdp.getMaximalsOfLine(
+                            self.summaryPdps[controllableIndex], neighborIndex
+                        )
+                        if self.optimizationDirections[controllableIndex] == -1:
+                            x = maximals[0]
+                        else:
+                            x = maximals[len(maximals) - 1]
 
-            if np.min(confidence) >= threshold:
-                break
+                        newAdaptation = np.copy(adaptation)
+                        featureIndex = self.controllableFeatureIndices[controllableIndex]
+                        featureMin = self.controllableFeatureDomains[controllableIndex, 0]
+                        featureMax = self.controllableFeatureDomains[controllableIndex, 1]
+                        newAdaptation[featureIndex] = np.clip(x, featureMin, featureMax)
+                        adaptations.append(newAdaptation)
+                        excludedFeatures.append(controllableIndex)
+                        break
 
-            if not moved and len(temp_excluded_features) == 0:
-                break
+        adaptations = np.unique(adaptations, axis=0)
 
-        return adaptation, confidence, n_iter
+        expanded_adaptations = list(adaptations)
+        maxPossibilities = self.max_fallback_combinations
+        for adaptation in adaptations:
+            neighborIndex = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+
+            maximals = [pdp.getMaximalsOfLine(self.summaryPdps[i], neighborIndex)
+                        for i in range(n_controllableFeatures)]
+
+            n_possibilities = np.prod([len(m) for m in maximals])
+            while n_possibilities > maxPossibilities:
+                i = np.argmax([len(m) for m in maximals])
+                maximals[i] = maximals[i][1::2]
+                n_possibilities = np.prod([len(m) for m in maximals])
+
+            possibilities = cartesian_product(*maximals)
+
+            for possibility in possibilities:
+                candidate = np.copy(sample)
+                for i, value in enumerate(possibility):
+                    featureIndex = self.controllableFeatureIndices[i]
+                    featureMin = self.controllableFeatureDomains[i, 0]
+                    featureMax = self.controllableFeatureDomains[i, 1]
+                    candidate[featureIndex] = np.clip(value, featureMin, featureMax)
+                expanded_adaptations.append(candidate)
+
+        adaptations = np.unique(np.asarray(expanded_adaptations), axis=0)
+        adaptationsConfidence = vecPredictProba(self.reqClassifiers, adaptations)
+
+        validAdaptationIndices = []
+        for i, confidence in enumerate(adaptationsConfidence):
+            if (confidence >= self.targetConfidence).all():
+                validAdaptationIndices.append(i)
+
+        validAdaptations = adaptations[validAdaptationIndices]
+        validAdaptationsConfidence = adaptationsConfidence[validAdaptationIndices]
+        validAdaptationFound = len(validAdaptations) > 0
+
+        if validAdaptationFound and len(validAdaptations) > self.n_startingSolutions:
+            def solutionRank(a, c):
+                return (self.optimizationScoreFunction(a) +
+                        np.sum(c - self.targetConfidence) / np.sum(solutionRank.ones - self.targetConfidence) * 100)
+
+            solutionRank.ones = np.ravel(np.ones((1, len(self.reqClassifiers))))
+
+            validAdaptationsRanks = [solutionRank(validAdaptations[i], validAdaptationsConfidence[i])
+                                     for i in range(len(validAdaptations))]
+
+            bestAdaptationIndices = np.argpartition(
+                validAdaptationsRanks, -self.n_startingSolutions
+            )[-self.n_startingSolutions:]
+            bestAdaptations = validAdaptations[bestAdaptationIndices]
+            bestAdaptationsConfidence = validAdaptationsConfidence[bestAdaptationIndices]
+        elif validAdaptationFound:
+            bestAdaptations = validAdaptations
+            bestAdaptationsConfidence = validAdaptationsConfidence
+        else:
+            def solutionRank(c):
+                return np.sum(c - self.targetConfidence)
+
+            adaptationsRanks = [solutionRank(adaptationsConfidence[i]) for i in range(len(adaptations))]
+
+            bestAdaptationIndices = np.where(adaptationsRanks == np.max(adaptationsRanks))
+            bestAdaptations = adaptations[bestAdaptationIndices]
+            bestAdaptationsConfidence = adaptationsConfidence[bestAdaptationIndices]
+
+            if len(bestAdaptations) > self.n_startingSolutions:
+                bestAdaptationsScores = [self.optimizationScoreFunction(a) for a in bestAdaptations]
+                bestAdaptationIndices = np.argpartition(
+                    bestAdaptationsScores, -self.n_startingSolutions
+                )[-self.n_startingSolutions:]
+                bestAdaptations = bestAdaptations[bestAdaptationIndices]
+                bestAdaptationsConfidence = bestAdaptationsConfidence[bestAdaptationIndices]
+
+        optimizationSteps = [0] * len(bestAdaptations)
+        for i in range(len(bestAdaptations)):
+            calls = 0
+            excludedFeatures = []
+            tempExcludedFeatures = []
+            adaptation = bestAdaptations[i]
+            confidence = bestAdaptationsConfidence[i]
+            neighborIndex = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+            while len(excludedFeatures) + len(tempExcludedFeatures) < n_controllableFeatures:
+                if calls >= 10:
+                    neighborIndex = np.ravel(self.knn.kneighbors([adaptation], 1, False))[0]
+                    calls = 0
+                adaptation, confidence = self.optimizeScoreStep(
+                    adaptation,
+                    confidence,
+                    validAdaptationFound,
+                    neighborIndex,
+                    excludedFeatures,
+                    tempExcludedFeatures,
+                )
+                optimizationSteps[i] += 1
+                calls += 1
+
+            bestAdaptations[i] = adaptation
+            bestAdaptationsConfidence[i] = confidence
+
+        bestAdaptations, indices = np.unique(bestAdaptations, axis=0, return_index=True)
+        bestAdaptationsConfidence = bestAdaptationsConfidence[indices]
+
+        bestAdaptationsScores = [self.optimizationScoreFunction(a) for a in bestAdaptations]
+
+        finalAdaptationIndex = np.argmax(bestAdaptationsScores)
+        finalAdaptation = bestAdaptations[finalAdaptationIndex]
+        finalAdaptationConfidence = bestAdaptationsConfidence[finalAdaptationIndex]
+        totalIterations = sum(optimizationSteps)
+
+        return finalAdaptation, finalAdaptationConfidence, totalIterations
 
     def evaluate_sample(self, sample, nreqs, threshold = 0.8):
         """
@@ -846,6 +1001,15 @@ class WIPPlanner:
         ----------
         sample : array of shape (n_features,)
             Feature vector representing the system state.
+        nreqs : int
+            Minimum number of satisfied requirements required when loading the
+            anchor polytopes for this sample.
+
+            In the current evaluator this value is computed as the number of
+            ground-truth satisfied requirements for the test row
+            (`num_reqs_satisfied`). This makes WIP compare the sample only
+            against anchors extracted from training samples that satisfy at
+            least as many requirements.
 
         threshold : float, optional (default = 0.8)
             Minimum acceptable confidence level. If predictions fall below this value,
@@ -872,6 +1036,8 @@ class WIPPlanner:
         - Adaptation aims to increase model confidence beyond the threshold.
         """
 
+        # Dynamically filter the available anchor/polytopes according to the
+        # requested minimum number of satisfied requirements.
         self.__load_anchor_explanations(self.anchor_explanations_path, nreqs)
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
@@ -899,16 +1065,6 @@ class WIPPlanner:
                 polytope = self.explanations[min_dist_index_observable]
 
                 sample = self.go_inside_CF_given_polytope(sample, polytope, self.controllableFeaturesNames, self.observableFeaturesNames)
-                #check is its now inside the polytope
-                #è un residuo di debug?
-                for i, f_name in enumerate(self.controllableFeaturesNames):
-                    inside = self.__inside(sample[i], polytope[f_name])
-                    if not inside:
-                        inside = False
-                for i, f_name in enumerate(self.observableFeaturesNames):
-                    inside = self.__inside(sample[i+3], polytope[f_name])
-                    if not inside:
-                        inside = False
 
                 #Evaluate the sample with the model
                 outputs = np.zeros(len(self.reqNames))
@@ -927,6 +1083,8 @@ class WIPPlanner:
                 confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
                 return sample, confidence, outputs, n_iter   
         else:
+            polytope = self.explanations[min_dist_index_observable]
+            sample = self.go_inside_CF_given_polytope(sample, polytope, self.controllableFeaturesNames, self.observableFeaturesNames)     
             sample, confidence, n_iter = self.findPdpFallbackAdaptation(sample, threshold)
             outputs = np.zeros(len(self.reqNames))
             output = True

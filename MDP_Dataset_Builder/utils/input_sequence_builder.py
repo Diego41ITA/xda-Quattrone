@@ -1,6 +1,5 @@
 # Create a dataset starting from a series of semantic space variables ranges
 import numpy as np
-import config
 import random
 
 FLOAT_MULTIPLIER = 2
@@ -125,4 +124,8 @@ def __build_random_combinations(ss_variables: dict, expected_maximum):
 
 
 if __name__ == "__main__":
+    try:
+        import MDP_Dataset_Builder.config as config
+    except ModuleNotFoundError:
+        import config
     build_sequences(config.SS_VARIABLES, config.MAX_SAMPLES)

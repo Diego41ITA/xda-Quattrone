@@ -28,6 +28,10 @@ class CustomPlanner:
         self.externalFeatureIndices = np.delete(np.array(range(X.shape[1])), controllableFeatureIndices)
         self.controllableFeatureDomains = controllableFeatureDomains
         self.optimizationDirections = optimizationDirections
+        if len(self.optimizationDirections) != len(self.controllableFeatureIndices):
+            raise ValueError(
+                "optimizationDirections must match the number of controllable features"
+            )
         self.optimizationScoreFunction = optimizationScoreFunction
         self.delta = delta
 

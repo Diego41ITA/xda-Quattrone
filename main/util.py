@@ -21,7 +21,119 @@ from pathlib import Path
 
 def build_results_dir(dataset_path: str | Path) -> Path:
     dataset_stem = Path(dataset_path).stem
-    return Path("../results") / dataset_stem
+    return Path("../results/WIP_only_true") / dataset_stem
+
+
+def resolve_anchor_output_paths(training_dataset: str | Path) -> tuple[Path, Path]:
+    training_dataset = Path(training_dataset)
+    dataset_name = training_dataset.stem
+
+    if dataset_name.lower() in {"x_train", "train"} and training_dataset.parent.name:
+        dataset_name = training_dataset.parent.name
+
+    # Resolve against the repository root, not against the current working
+    # directory. This keeps anchor/polytope outputs stable even when callers
+    # change cwd (e.g. evaluator.py does `os.chdir(sys.path[0])`).
+    base_dir = PROJECT_ROOT / "main" / "polytopes" / "rescue_robot"
+    return (
+        base_dir / "anchors_explanations.csv",
+        base_dir / "anchors_rules.csv",
+    )
+
+
+def _load_builder_domain_module(builder_dir, mdp_domain=None):
+    builder_dir = Path(builder_dir)
+    config_path = _builder_config_path(builder_dir, mdp_domain)
+    spec = importlib.util.spec_from_file_location("_xda_mdp_builder_config", config_path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"Cannot load MDP builder config from {config_path}")
+
+    module = importlib.util.module_from_spec(spec)
+    builder_path = str(builder_dir.resolve())
+    project_root_path = str(builder_dir.resolve().parent)
+    added_paths = []
+    if builder_path not in sys.path:
+        sys.path.insert(0, builder_path)
+        added_paths.append(builder_path)
+    if project_root_path not in sys.path:
+        sys.path.insert(0, project_root_path)
+        added_paths.append(project_root_path)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        for path in reversed(added_paths):
+            if path in sys.path:
+                sys.path.remove(path)
+
+    return module
+
+
+def get_evaluator_domain_config(mdp_domain, builder_dir=None):
+    builder_dir = Path(builder_dir) if builder_dir is not None else BUILDER_DIR
+    domain_defaults = {
+        "UAV_v02": {
+            "dataset_path": Path("../datasets/uav.csv"),
+            "controllable_feature_indices": [0, 1, 2],
+            "optimization_directions": [1, 1, -1],
+        },
+        "RescueRobot": {
+            "dataset_path": Path("../datasets/dataset15000_balanced_joint.csv"),
+            "controllable_feature_indices": [0, 1, 2, 3],
+            "optimization_directions": [1, -1, -1, -1],
+        },
+    }
+
+    if mdp_domain not in domain_defaults:
+        supported_domains = ", ".join(sorted(domain_defaults))
+        raise ValueError(
+            f"Unsupported evaluator domain '{mdp_domain}'. Supported domains: {supported_domains}"
+        )
+
+    module = _load_builder_domain_module(builder_dir, mdp_domain)
+    feature_names = list(module.SS_VARIABLES.keys())
+    reqs = [f"req_{i}" for i in range(len(module.CONSTRAINTS))]
+    controllable_feature_indices = domain_defaults[mdp_domain]["controllable_feature_indices"]
+    controllable_feature_names = [feature_names[i] for i in controllable_feature_indices]
+    external_feature_names = [
+        feature_names[i]
+        for i in range(len(feature_names))
+        if i not in controllable_feature_indices
+    ]
+
+    config = {
+        "dataset_path": domain_defaults[mdp_domain]["dataset_path"],
+        "feature_names": feature_names,
+        "controllable_feature_indices": controllable_feature_indices,
+        "controllable_feature_names": controllable_feature_names,
+        "external_feature_names": external_feature_names,
+        "optimization_directions": domain_defaults[mdp_domain]["optimization_directions"],
+        "reqs": reqs,
+    }
+    validate_domain_planner_config(config)
+    return config
+
+
+def validate_domain_planner_config(config):
+    controllable_feature_indices = config["controllable_feature_indices"]
+    controllable_feature_names = config["controllable_feature_names"]
+    optimization_directions = config["optimization_directions"]
+    feature_names = config["feature_names"]
+
+    if len(controllable_feature_indices) != len(controllable_feature_names):
+        raise ValueError(
+            "controllable_feature_indices and controllable_feature_names must have the same length"
+        )
+
+    if len(controllable_feature_indices) != len(optimization_directions):
+        raise ValueError(
+            "optimization_directions must match the number of controllable features"
+        )
+
+    for index, feature_name in zip(controllable_feature_indices, controllable_feature_names):
+        if feature_names[index] != feature_name:
+            raise ValueError(
+                "controllable_feature_names must match feature_names at controllable_feature_indices"
+            )
 
 
 def build_explainability_paths(results_dir: str | Path, enabled: bool):
@@ -49,7 +161,7 @@ def build_evaluated_input_dataset(
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 BUILDER_DIR = PROJECT_ROOT / "MDP_Dataset_Builder"
-RESULTS_DIR = PROJECT_ROOT / "results"
+RESULTS_DIR = PROJECT_ROOT / "results/WIP_only_true"
 DEFAULT_TOTAL_THREADS = 8
 _EVALUATION_LOCK = threading.Lock()
 TIME_EPSILON = 1e-10
@@ -192,25 +304,10 @@ def _builder_config_path(builder_dir, mdp_domain=None):
 
 
 def _load_builder_ss_variables(builder_dir, mdp_domain=None):
-    builder_dir = Path(builder_dir)
-    config_path = _builder_config_path(builder_dir, mdp_domain)
-    spec = importlib.util.spec_from_file_location("_xda_mdp_builder_config", config_path)
-    if spec is None or spec.loader is None:
-        raise ValueError(f"Cannot load MDP builder config from {config_path}")
-
-    module = importlib.util.module_from_spec(spec)
-    builder_path = str(builder_dir.resolve())
-    added_builder_path = builder_path not in sys.path
-    if added_builder_path:
-        sys.path.insert(0, builder_path)
-    try:
-        spec.loader.exec_module(module)
-    finally:
-        if added_builder_path:
-            sys.path.remove(builder_path)
-
+    module = _load_builder_domain_module(builder_dir, mdp_domain)
     ss_variables = getattr(module, "SS_VARIABLES", None)
     if not isinstance(ss_variables, dict):
+        config_path = _builder_config_path(builder_dir, mdp_domain)
         raise ValueError(f"{config_path} must define SS_VARIABLES as a dict")
     return ss_variables
 

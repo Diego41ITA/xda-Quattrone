@@ -6,11 +6,11 @@ from sklearn import datasets
 from sklearn.metrics import accuracy_score
 
 from anchor import utils
-from anchor import anchor_tabular
 import pandas as pd
 from multiprocessing import Pool, cpu_count
+from pathlib import Path
 
-from util import vecPredictProba
+from util import resolve_anchor_output_paths, vecPredictProba
 
 from typing import Optional, Tuple
 
@@ -134,6 +134,10 @@ class AnchorsPlanner:
         self.feature_number = feature_number
         self.feature_names = feature_names
         self.anchorsConfidence = anchorsConfidence
+        self.training_dataset = training_dataset
+        self.anchor_explanations_path, _ = resolve_anchor_output_paths(
+            training_dataset
+        )
         self.controllableFeatureIndices = np.array(controllableFeatureIndices)
         self.controllableFeaturesNames = [feature_names[i] for i in controllableFeatureIndices]
 
@@ -156,15 +160,7 @@ class AnchorsPlanner:
             true_from_anchors_df[r] = np.nonzero(datasets[i].labels_train)[0]
             print('Training samples with {} satisfied: '.format(r), true_from_anchors_df[r].shape, "over ", datasets[i].train.shape[0])
 
-        explainer = []
         req_number = len(reqNames)
-        for i in range(req_number):
-            #initialize the explainer
-            explainer.append(anchor_tabular.AnchorTabularExplainer(
-                datasets[i].class_names, #it maps the 0 and 1 in the dataset's requirements to the class names
-                datasets[i].feature_names,
-                datasets[i].train,
-                datasets[i].categorical_names)) 
 
         for i, req in enumerate(reqNames):
             output = reqClassifiers[i].predict(datasets[i].train)
@@ -219,43 +215,10 @@ class AnchorsPlanner:
         m_r_n = true_negative.shape[0] - np.intersect1d(true_negative, negatively_classified).shape[0]
         print(f"Number of missclassified real negatives: {m_r_n}")
 
-        explanations = []
-
-        for j, p_sample in enumerate(positively_classified):
-            intersected_exp = {}
-            for i in range(req_number):
-                #get the sample
-                sample = datasets[i].train[p_sample]
-                #explain the sample
-                exp = explainer[i].explain_instance(sample, self.reqClassifiers[i].predict, threshold=0.95)
-                #get the textual explanation
-                exp = exp.names()
-                #transform the textual explanations in an interval
-                for boundings in exp:
-                    quoted, rest = self.__get_anchor(boundings)            
-                    if(quoted not in intersected_exp):
-                        intersected_exp[quoted] = self.__parse_range(rest)
-                    else:
-                        intersected_exp[quoted] = self.__intersect(intersected_exp[quoted], self.__parse_range(rest))
-
-            #prepare the data structure
-            explanations.append(intersected_exp)
-        
-        missing = 0
-        explanations_reordered = []
-        for exp in explanations:
-            exp_reordered = {}
-            for k in feature_names:
-                if k in exp:
-                    exp_reordered[k] = exp[k]
-                else:
-                    exp_reordered[k] = (-inf, inf, False, False)
-                    index = explanations.index(exp)
-                    missing = 1
-            if missing:
-                missing = 0
-            explanations_reordered.append(exp_reordered)
-            self.explanations = explanations_reordered
+        explanations_reordered = self.__load_anchor_explanations(
+            self.anchor_explanations_path
+        )
+        self.explanations = explanations_reordered
         
         number_of_random_points = 10
         number_of_explanations = len(explanations_reordered)
@@ -263,7 +226,7 @@ class AnchorsPlanner:
         coefficients_to_remove = []
         for n in range(number_of_explanations):
             single_anchor_mean = self.__empty_requirement_vector(req_number)
-            single_anchor = explanations[n]
+            single_anchor = explanations_reordered[n]
             
             for i in range(number_of_random_points):
                 random_sample = np.zeros((1, feature_number))   
@@ -290,14 +253,21 @@ class AnchorsPlanner:
             single_anchor_mean += probs_boundary_b
 
             single_anchor_mean /= (number_of_random_points + 2)
-            if(np.any(single_anchor_mean < 0.5)):
+            if self.__should_remove_anchor(single_anchor_mean):
                 coefficients_to_remove.append(n)
 
         req_confidences_sum /= number_of_explanations * number_of_random_points
 
         # Remove anchors with average probabilities below 0.5
-        explanations_removed_negatives = [explanations[i] for i in range(len(explanations)) if i not in coefficients_to_remove]
-        explanations = explanations_removed_negatives
+        explanations_removed_negatives = [
+            explanations_reordered[i]
+            for i in range(len(explanations_reordered))
+            if i not in coefficients_to_remove
+        ]
+        self.explanations = explanations_removed_negatives
+
+    def __should_remove_anchor(self, single_anchor_mean):
+        return np.any(single_anchor_mean < 0.5)
 
     def __get_anchor(self, a)-> tuple:
         """
@@ -349,6 +319,34 @@ class AnchorsPlanner:
                 return feature, rest
 
         raise ValueError(f"Cannot extract feature name from anchor rule: {a}")
+
+    def __load_anchor_explanations(self, csv_path):
+        #if not csv_path.exists():
+        #    raise FileNotFoundError(
+        #        f"Anchor explanations file not found: {csv_path}"
+        #    )
+
+        df = pd.read_csv(csv_path)
+        explanations = []
+        min_satisfied_reqs = len(self.reqNames)
+
+        for _, row in df.iterrows():
+            if int(row.get("n_satisfied_reqs", 0)) < min_satisfied_reqs:
+                continue
+
+            anchor = {}
+            anchor["n_satisfied_reqs"] = int(row["n_satisfied_reqs"])
+            for feat in self.feature_names:
+                anchor[feat] = eval(
+                    row[feat], {"__builtins__": {}}, {"inf": inf}
+                )
+            explanations.append(anchor)
+
+        print(
+            f"Loaded {len(explanations)} anchor explanations from {csv_path} "
+            f"with n_satisfied_reqs >= {min_satisfied_reqs}"
+        )
+        return explanations
 
     def __empty_requirement_vector(self, req_number):
         return np.zeros((1, req_number))
@@ -612,7 +610,6 @@ class AnchorsPlanner:
 
         return contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable
 
-
     def evaluate_sample(self, sample, threshold = 0.8):
         """
         Method:
@@ -653,6 +650,9 @@ class AnchorsPlanner:
         - A sample inside both polytope types is evaluated immediately.
         - Adaptation aims to increase model confidence beyond the threshold.
         """
+
+        if not self.explanations:
+            return None, None, None, 0
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
 
@@ -736,7 +736,6 @@ class AnchorsPlanner:
             confidence =  vecPredictProba(self.reqClassifiers, sample.reshape(1, -1))[0]
             return sample, confidence, outputs, n_iter           
             
-
     def go_inside_CF_given_polytope(self, sample, polytope, controllable_features, observable_features):
         """
             Adjusts the controllable feature values of a sample to ensure it lies within the bounds of a given polytope.
@@ -782,7 +781,6 @@ class AnchorsPlanner:
             elif(sample[i] > int(b)):
                 sample[i] = int(b) - np.abs(b-a)/10
         return sample
-
 
     def findBestAdaptation(self, sample, polytope, controllable_features, threshold=0.8, max_iter=1000):
         """
