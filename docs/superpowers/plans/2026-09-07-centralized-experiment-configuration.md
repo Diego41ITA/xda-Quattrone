@@ -23,6 +23,49 @@
 
 ---
 
+### Task 0: Python 3.12 dependency baseline
+
+**Files:**
+- Create: `tests/test_runtime_dependencies.py`
+- Modify: `requirements.txt`
+
+**Interfaces:**
+- Produces: a Python 3.12-installable environment containing NumPy, pandas/scikit-learn compatibility, pymoo, and the `anchor` modules imported by both polytope planners.
+
+- [ ] **Step 1: Add an import smoke test for planner dependencies**
+
+```python
+def test_planner_runtime_dependencies_import():
+    import numpy
+    import sklearn
+    import pymoo
+    from anchor import anchor_tabular, utils
+
+    assert numpy.__version__
+    assert sklearn.__version__
+    assert pymoo.__version__
+    assert anchor_tabular is not None
+    assert utils is not None
+```
+
+- [ ] **Step 2: Run the test and verify RED**
+
+Run: `python -m pytest tests/test_runtime_dependencies.py -v`
+
+Expected: failure because `pymoo` and `anchor` are absent.
+
+- [ ] **Step 3: Replace Python-3.12-incompatible pins**
+
+Use bounded versions with Python 3.12 wheels, replace the unused `alibi` dependency with `anchor-exp`, and retain the local MDP simulator wheel.
+
+- [ ] **Step 4: Install and verify GREEN**
+
+Run: `python -m pip install -r requirements.txt` followed by `python -m pytest tests/test_runtime_dependencies.py -v`.
+
+Expected: installation succeeds and the dependency smoke test passes.
+
+---
+
 ### Task 1: Dataset selection and resolved configuration
 
 **Files:**

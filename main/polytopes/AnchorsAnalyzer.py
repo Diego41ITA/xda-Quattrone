@@ -4,6 +4,13 @@ import math
 import matplotlib
 import os
 import sys
+from pathlib import Path
+
+MAIN_DIR = Path(__file__).resolve().parent.parent
+if str(MAIN_DIR) not in sys.path:
+    sys.path.insert(0, str(MAIN_DIR))
+
+from util import get_active_experiment_config, resolve_anchor_output_paths
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -132,34 +139,23 @@ def plot_neighbors_box(df_neighbors, filename="neighbors_boxplot.png"):
     print(f"Boxplot vicini salvato in: {filename}")
 
 # =========================
-# Definizione feature
-# =========================
-featureNames = ["cruise speed",
-                "image resolution",
-                "illuminance",
-                "controls responsiveness",
-                "power",
-                "smoke intensity",
-                "obstacle size",
-                "obstacle distance",
-                "firm obstacle"]
-
-controllableFeaturesNames = featureNames[0:3]
-externalFeaturesNames = featureNames[3:7]
-
-# =========================
 # Main
 # =========================
 if __name__ == '__main__':
-    os.chdir(sys.path[0])
+    experiment = get_active_experiment_config()
+    featureNames = list(experiment.feature_names)
+    controllableFeaturesNames = list(experiment.controllable_feature_names)
+    externalFeaturesNames = list(experiment.observable_feature_names)
+    explanations_path, _ = resolve_anchor_output_paths(experiment)
+    experiment.anchor_dir.mkdir(parents=True, exist_ok=True)
+    os.chdir(experiment.anchor_dir)
 
-    df_initial = pd.read_csv("../datasets/balanced_dataset.csv")
-    df_compare = pd.read_csv("anchors_explanations.csv")
+    df_initial = pd.read_csv(experiment.dataset_path)
+    df_compare = pd.read_csv(explanations_path)
 
     # Pulizia colonne e tipi
     df_initial.columns = df_initial.columns.str.strip()
     df_compare.columns = df_compare.columns.str.strip()
-    df_initial["firm obstacle"] = df_initial["firm obstacle"].astype(float)
     df_compare["n_satisfied_reqs"] = df_compare["n_satisfied_reqs"].astype(int)
 
     # ===== Parte 1: distanza media (boxplot)
