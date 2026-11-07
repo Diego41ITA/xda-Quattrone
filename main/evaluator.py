@@ -17,9 +17,12 @@ from NSGA3Planner import NSGA3Planner
 from util import (
     vecPredictProba,
     evaluateAdaptations,
-    get_evaluator_domain_config,
+    get_active_experiment_config,
     guard_time_value,
-    validate_domain_planner_config,
+    optimization_score,
+    resolve_anchor_output_paths,
+    validate_adaptation,
+    validate_dataset_schema,
     validateBuilderFeatureNames,
 )
 from AnchorsPlanner import AnchorsPlanner
@@ -36,9 +39,15 @@ def successScore(adaptation, reqClassifiers, targetSuccessProba):
     return np.sum(vecPredictProba(reqClassifiers, [adaptation])[0] - targetSuccessProba)
 
 
-def clamp_controllable_features(adaptation, n_controllable_features, lower_bound=0, upper_bound=100):
-    for index in range(n_controllable_features):
-        adaptation[index] = min(max(adaptation[index], lower_bound), upper_bound)
+def clamp_controllable_features(adaptation, config):
+    for index, bounds, value_type in zip(
+        config.controllable_feature_indices,
+        config.controllable_feature_domains,
+        config.controllable_feature_types,
+    ):
+        adaptation[index] = np.clip(adaptation[index], *bounds)
+        if value_type is int:
+            adaptation[index] = round(adaptation[index])
     return adaptation
 
 # ====================================================================================================== #
@@ -60,46 +69,35 @@ if __name__ == '__main__':
     # (`customDataset.csv`, `nsga3Dataset.csv`, ...). If False, the evaluator
     # still computes planner-side metrics but skips builder-based validation.
     evaluate = True
-    # Active domain profile. This controls dataset path, feature names,
-    # controllable feature indices, optimization directions, and requirement
-    # names via `get_evaluator_domain_config(...)`.
-    mdpDomain = "RescueRobot"
-    #mdpDomain = "UAV_v02"
-    domainConfig = get_evaluator_domain_config(mdpDomain)
-    validate_domain_planner_config(domainConfig)
-
-    datasetPath = domainConfig["dataset_path"]
-    resultsDir = build_results_dir(datasetPath)
+    experiment = get_active_experiment_config()
+    mdpDomain = experiment.domain
+    datasetPath = experiment.dataset_path
+    resultsDir = experiment.results_dir
     trainPath = resultsDir / "X_train.csv"
     evaluatedTestPath = resultsDir / "X_test_evaluated.csv"
     resultsDir.mkdir(parents=True, exist_ok=True)
 
     ds = pd.read_csv(datasetPath)
-    featureNames = domainConfig["feature_names"]
+    validate_dataset_schema(ds.columns, experiment)
+    featureNames = experiment.feature_names
     if evaluate:
         validateBuilderFeatureNames(featureNames, mdp_domain=mdpDomain)
 
-    controllableFeaturesNames = domainConfig["controllable_feature_names"]
-    externalFeaturesNames = domainConfig["external_feature_names"]
-    controllableFeatureIndices = domainConfig["controllable_feature_indices"]
+    controllableFeaturesNames = experiment.controllable_feature_names
+    externalFeaturesNames = experiment.observable_feature_names
+    controllableFeatureIndices = experiment.controllable_feature_indices
 
     # for simplicity, we consider all the ideal points to be 0 or 100
     # so that we just need to consider ideal directions instead
     # -1 => minimize, 1 => maximize
-    optimizationDirections = domainConfig["optimization_directions"]
+    optimizationDirections = experiment.optimization_directions
     maxOptimizationScore = 100 * len(optimizationDirections)
 
     # provided optimization score function (based on the ideal controllable feature assignment)
     def optimizationScore(adaptation):
-        score = 0
-        for index, direction in enumerate(optimizationDirections):
-            if direction == 1:
-                score += 100 - adaptation[index]
-            else:
-                score += adaptation[index]
-        return score
+        return optimization_score(adaptation, experiment)
 
-    reqs = domainConfig["reqs"]
+    reqs = experiment.requirement_names
     
     n_reqs = len(reqs)
     # KNN neighborhood size used by the PDP-driven planners to pick local
@@ -132,7 +130,9 @@ if __name__ == '__main__':
                                      np.ravel(y_test.loc[:, req])))
         print("=" * 100)
 
-    controllableFeatureDomains = np.repeat([[0, 100]], n_controllableFeatures, 0)
+    controllableFeatureDomains = np.asarray(
+        experiment.controllable_feature_domains, dtype=float
+    )
 
     ds_train = pd.DataFrame(np.hstack((X_train, y_train)), columns=featureNames + reqs)
     ds_train.to_csv(trainPath, index=False)
@@ -144,18 +144,23 @@ if __name__ == '__main__':
                                   "../explainability_plots")
 
     nsga3Planner = NSGA3Planner(models, targetConfidence, controllableFeatureIndices, controllableFeatureDomains,
-                                optimizationDirections, successScore, optimizationScore)
+                                optimizationDirections, successScore, optimizationScore,
+                                controllableFeatureTypes=experiment.controllable_feature_types)
     
+    anchor_explanations_path, _ = resolve_anchor_output_paths(experiment)
+    build_anchor_explanations = not anchor_explanations_path.exists()
     wipPlanner = WIPPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames, controllableFeaturesNames, 
                                 X_train, "../explainability_plots", controllableFeatureIndices, controllableFeatureDomains
-                                    , optimizationDirections, optimizationScore, 1, targetConfidence, build_explanations=False,
+                                    , optimizationDirections, optimizationScore, 1, targetConfidence,
+                                    build_explanations=build_anchor_explanations,
                                     n_neighbors=n_neighbors, n_startingSolutions=n_startingSolutions,
-                                    max_fallback_combinations=2000)
+                                    max_fallback_combinations=2000,
+                                    experiment_config=experiment)
     
     # create lime explainer
     limeExplainer = lime.createLimeExplainer(X_train)
     
-    anchorsPlanner = AnchorsPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames,controllableFeatureIndices, controllableFeatureDomains)
+    anchorsPlanner = AnchorsPlanner(trainPath, models, reqs, 0.95, len(featureNames),featureNames,controllableFeatureIndices, controllableFeatureDomains, experiment_config=experiment)
 
     # metrics
     meanCustomScore = 0
@@ -190,23 +195,15 @@ if __name__ == '__main__':
     path = str(explainabilityRoot / "adaptations")
 
     # Number of held-out test rows evaluated in this run.
-    testNum = 100
+    testNum = min(100, len(X_test))
     evaluated_test_rows = []
 
     for k in range(1, testNum + 1):
         rowIndex = k - 1
         row = X_test.iloc[rowIndex, :].to_numpy()
 
-        # Number of ground-truth satisfied requirements for this test sample.
-        # This value is passed to WIP as `nreqs` and is used to load only anchor
-        # polytopes generated from training samples satisfying at least this
-        # many requirements.
-        num_reqs_satisfied = 0
         reqs_row = y_test.iloc[rowIndex, :].to_numpy()
         evaluated_test_rows.append([rowIndex, *row.tolist(), *reqs_row.tolist()])
-        num_reqs_satisfied = np.sum(reqs_row)
-
-        num_reqs_satisfied = 4
 
         print(Fore.BLUE + "Test " + str(k) + ":" + Style.RESET_ALL)
         print("Row " + str(rowIndex) + ":\n" + str(row))
@@ -220,7 +217,11 @@ if __name__ == '__main__':
         anchorsTime = endTime - startTime
 
         if customAdaptation_anchors is not None:
-            clamp_controllable_features(customAdaptation_anchors, n_controllableFeatures)
+            clamp_controllable_features(customAdaptation_anchors, experiment)
+            validate_adaptation(row, customAdaptation_anchors, experiment)
+            customConfidence_anchors = vecPredictProba(
+                models, [customAdaptation_anchors]
+            )[0]
             
             customScore_anchors = optimizationScore(customAdaptation_anchors) if customAdaptation_anchors is not None else None
                     
@@ -230,7 +231,7 @@ if __name__ == '__main__':
                                         path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
-            print("Best adaptation Anchors:                 " + str(customAdaptation_anchors[0:n_controllableFeatures]))
+            print("Best adaptation Anchors:                 " + str(customAdaptation_anchors[list(controllableFeatureIndices)]))
             print("Model confidence:                " + str(customConfidence_anchors))
             print("Adaptation score:                " + str(customScore_anchors) + f" / {maxOptimizationScore}")
             print("Number of iterations:            " + str(n_iter_anchors))
@@ -254,12 +255,16 @@ if __name__ == '__main__':
         customTime = endTime - startTime
 
         if customAdaptation is not None:
+            clamp_controllable_features(customAdaptation, experiment)
+            validate_adaptation(row, customAdaptation, experiment)
+            customConfidence = vecPredictProba(models, [customAdaptation])[0]
+            customScore = optimizationScore(customAdaptation)
             for i, req in enumerate(reqs):
                 lime.saveExplanation(lime.explain(limeExplainer, models[i], customAdaptation),
                                         path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
-            print("Best adaptation:                 " + str(customAdaptation[0:n_controllableFeatures]))
+            print("Best adaptation:                 " + str(customAdaptation[list(controllableFeatureIndices)]))
             print("Model confidence:                " + str(customConfidence))
             print("Adaptation score:                " + str(customScore) + f" / {maxOptimizationScore}")
         else:
@@ -271,16 +276,15 @@ if __name__ == '__main__':
 
         # wip algorithm
         startTime = time.time()
-        # WIP receives `num_reqs_satisfied` as a dynamic anchor-loading
-        # threshold. This makes the planner restrict its polytope search to
-        # anchors built from sufficiently good training points.
-        customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row, num_reqs_satisfied)
+        customAdaptation_wip, customConfidence_wip, _, n_iter_wip = wipPlanner.evaluate_sample(row)
         endTime = time.time()
         
         wipTime = endTime - startTime
 
         if customAdaptation_wip is not None:
-            clamp_controllable_features(customAdaptation_wip, n_controllableFeatures)
+            clamp_controllable_features(customAdaptation_wip, experiment)
+            validate_adaptation(row, customAdaptation_wip, experiment)
+            customConfidence_wip = vecPredictProba(models, [customAdaptation_wip])[0]
             
             customScore_wip = optimizationScore(customAdaptation_wip) if customAdaptation_wip is not None else None
                     
@@ -290,7 +294,7 @@ if __name__ == '__main__':
                                         path + "/" + str(k) + "_" + req + "_final")
                 plt.close('all')
 
-            print("Best adaptation WIP:                 " + str(customAdaptation_wip[0:n_controllableFeatures]))
+            print("Best adaptation WIP:                 " + str(customAdaptation_wip[list(controllableFeatureIndices)]))
             print("Model confidence:                " + str(customConfidence_wip))
             print("Adaptation score:                " + str(customScore_wip) + f" / {maxOptimizationScore}")
             print("Number of iterations:            " + str(n_iter_wip))
@@ -302,16 +306,15 @@ if __name__ == '__main__':
         print("-" * 100)
 
         # genetic algorithm
-        externalFeatures = row[n_controllableFeatures:]
-
         startTime = time.time()
-        nsga3Adaptation, nsga3Confidence, nsga3Score = nsga3Planner.findAdaptation(externalFeatures)
+        nsga3Adaptation, nsga3Confidence, nsga3Score = nsga3Planner.findAdaptation(row)
         endTime = time.time()
         nsga3Time = endTime - startTime
+        validate_adaptation(row, nsga3Adaptation, experiment)
 
-        print("Best NSGA3 adaptation:           " + str(nsga3Adaptation[:n_controllableFeatures]))
+        print("Best NSGA3 adaptation:           " + str(nsga3Adaptation[list(controllableFeatureIndices)]))
         print("Model confidence:                " + str(nsga3Confidence))
-        print("Adaptation score:                " + str(nsga3Score) + " / 400")
+        print("Adaptation score:                " + str(nsga3Score) + f" / {maxOptimizationScore}")
         print("NSGA3 execution time:            " + str(nsga3Time) + " s")
 
         print("-" * 100)

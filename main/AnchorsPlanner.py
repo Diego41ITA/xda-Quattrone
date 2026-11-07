@@ -1,6 +1,7 @@
 import numpy as np
+import ast
 import re
-from math import inf
+from math import ceil, floor, inf
 import sklearn
 from sklearn import datasets
 from sklearn.metrics import accuracy_score
@@ -10,7 +11,12 @@ import pandas as pd
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
 
-from util import resolve_anchor_output_paths, vecPredictProba
+from util import (
+    point_to_polytopes_distances,
+    resolve_anchor_output_paths,
+    resolve_experiment_config,
+    vecPredictProba,
+)
 
 from typing import Optional, Tuple
 
@@ -62,7 +68,8 @@ class AnchorsPlanner:
     """
     def __init__(self, training_dataset, reqClassifiers, reqNames, 
                  anchorsConfidence, feature_number, feature_names,
-                 controllableFeatureIndices, controllableFeatureDomains ):
+                 controllableFeatureIndices, controllableFeatureDomains,
+                 experiment_config=None):
         """
         Initializes the AnchorsPlanner by training requirement explainers, 
         generating anchor-based explanations, and filtering them by confidence.
@@ -135,8 +142,9 @@ class AnchorsPlanner:
         self.feature_names = feature_names
         self.anchorsConfidence = anchorsConfidence
         self.training_dataset = training_dataset
+        self.experiment_config = experiment_config or resolve_experiment_config()
         self.anchor_explanations_path, _ = resolve_anchor_output_paths(
-            training_dataset
+            self.experiment_config
         )
         self.controllableFeatureIndices = np.array(controllableFeatureIndices)
         self.controllableFeaturesNames = [feature_names[i] for i in controllableFeatureIndices]
@@ -222,6 +230,8 @@ class AnchorsPlanner:
         
         number_of_random_points = 10
         number_of_explanations = len(explanations_reordered)
+        if number_of_explanations == 0:
+            return
         req_confidences_sum = self.__empty_requirement_vector(req_number)
         coefficients_to_remove = []
         for n in range(number_of_explanations):
@@ -236,12 +246,36 @@ class AnchorsPlanner:
                 for k, interval in self.__anchor_feature_ranges(
                     single_anchor, feature_names
                 ):
-                    a = max(interval[0], 0)
-                    b = min(interval[1], 100)
-                    rand = np.random.uniform(a, b)
-                    random_sample[0, feature_names.index(k)] = rand
-                    boundary_sample_a[0, feature_names.index(k)] = a
-                    boundary_sample_b[0, feature_names.index(k)] = b
+                    feature_index = feature_names.index(k)
+                    domain_a, domain_b = self.experiment_config.feature_domains[
+                        feature_index
+                    ]
+                    a = max(interval[0], domain_a)
+                    b = min(interval[1], domain_b)
+                    if a > b:
+                        raise ValueError(
+                            f"Anchor interval {interval} for '{k}' does not intersect "
+                            f"the configured domain {(domain_a, domain_b)}"
+                        )
+                    if self.experiment_config.feature_types[feature_index] is int:
+                        integer_a = ceil(a)
+                        integer_b = floor(b)
+                        if a == interval[0] and not interval[2] and integer_a == a:
+                            integer_a += 1
+                        if b == interval[1] and not interval[3] and integer_b == b:
+                            integer_b -= 1
+                        if integer_a > integer_b:
+                            raise ValueError(
+                                f"Anchor interval {interval} contains no valid discrete "
+                                f"value for '{k}'"
+                            )
+                        a, b = integer_a, integer_b
+                        rand = np.random.randint(a, b + 1)
+                    else:
+                        rand = np.random.uniform(a, b)
+                    random_sample[0, feature_index] = rand
+                    boundary_sample_a[0, feature_index] = a
+                    boundary_sample_b[0, feature_index] = b
 
                 probs = vecPredictProba(reqClassifiers, random_sample)
                 req_confidences_sum += probs
@@ -337,9 +371,9 @@ class AnchorsPlanner:
             anchor = {}
             anchor["n_satisfied_reqs"] = int(row["n_satisfied_reqs"])
             for feat in self.feature_names:
-                anchor[feat] = eval(
-                    row[feat], {"__builtins__": {}}, {"inf": inf}
-                )
+                interval_text = str(row[feat]).replace("-inf", "-1e309")
+                interval_text = interval_text.replace("inf", "1e309")
+                anchor[feat] = ast.literal_eval(interval_text)
             explanations.append(anchor)
 
         print(
@@ -546,58 +580,13 @@ class AnchorsPlanner:
         - Bounds of `-inf` and `inf` in intervals are replaced by 0 and 100 respectively for distance calculation.
         - The observable features are assumed to start at index offset `len(controllable_features)` in `x`.
         """
-        min_dist_controllable = np.inf
-        min_dist_index_controllable = -1
-
-        min_dist_observable = np.inf
-        min_dist_index_observable = -1
-
-        contr_f_dist = np.zeros(len(explanations_table))
-        obs_f_dist = np.zeros(len(explanations_table))
-
-        for i in range(len(explanations_table)):
-            for j, f_name in enumerate(controllable_features):
-                a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-                if a == -inf:
-                    a = 0
-                if b == inf:
-                    b = 100
-                if(x[j] < a):
-                    d = (a - x[j]) ** 2
-                    contr_f_dist[i] += d
-                    if(contr_f_dist[i] >= min_dist_controllable):
-                        break
-                elif(x[j] > b):
-                    d = (b - x[j]) ** 2
-                    contr_f_dist[i] += d
-                    if(contr_f_dist[i] >= min_dist_controllable):
-                        break
-            if(contr_f_dist[i] < min_dist_controllable):
-                min_dist_controllable = contr_f_dist[i]
-                min_dist_index_controllable = i
-
-
-            for j, f_name in enumerate(observable_features): 
-                jj = j + 3
-                a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-                if a == -inf:
-                    a = 0
-                if b == inf:
-                    b = 100
-
-                if(x[jj] < a):
-                    d = (a - x[jj]) ** 2
-                    obs_f_dist[i] += d
-                    if(obs_f_dist[i] >= min_dist_observable):
-                        break
-                elif(x[jj] > b):
-                    d = (b - x[jj]) ** 2
-                    obs_f_dist[i] += d
-                    if(obs_f_dist[i] >= min_dist_observable):
-                        break
-            if(obs_f_dist[i] < min_dist_observable):
-                min_dist_observable = obs_f_dist[i]
-                min_dist_index_observable = i
+        contr_f_dist, obs_f_dist = point_to_polytopes_distances(
+            x, explanations_table, self.experiment_config
+        )
+        min_dist_index_controllable = int(np.argmin(contr_f_dist))
+        min_dist_controllable = contr_f_dist[min_dist_index_controllable]
+        min_dist_index_observable = int(np.argmin(obs_f_dist))
+        min_dist_observable = obs_f_dist[min_dist_index_observable]
 
         #This adds the case in which there are muptile polytopes with the same distance, choose the one common to both
         mask_controllable = np.where(contr_f_dist == 0)[0]
@@ -681,11 +670,11 @@ class AnchorsPlanner:
                 sample = self.go_inside_CF_given_polytope(sample, polytope, self.controllableFeaturesNames, self.observableFeaturesNames)
                 #check is its now inside the polytope
                 for i, f_name in enumerate(self.controllableFeaturesNames):
-                    inside = self.__inside(sample[i], polytope[f_name])
+                    inside = self.__inside(sample[self.controllableFeatureIndices[i]], polytope[f_name])
                     if not inside:
                         inside = False
                 for i, f_name in enumerate(self.observableFeaturesNames):
-                    inside = self.__inside(sample[i+3], polytope[f_name])
+                    inside = self.__inside(sample[self.observableFeatureIndices[i]], polytope[f_name])
                     if not inside:
                         inside = False
                 #Evaluate the sample with the model
@@ -712,11 +701,11 @@ class AnchorsPlanner:
 
             #check is its now inside the polytope for the CF
             for i, f_name in enumerate(self.controllableFeaturesNames):
-                inside = self.__inside(sample[i], polytope[f_name])
+                inside = self.__inside(sample[self.controllableFeatureIndices[i]], polytope[f_name])
                 if not inside:
                     inside = False
             for i, f_name in enumerate(self.observableFeaturesNames):
-                inside = self.__inside(sample[i+3], polytope[f_name])
+                inside = self.__inside(sample[self.observableFeatureIndices[i]], polytope[f_name])
                 if not inside:
                     inside = False
                     
@@ -771,15 +760,15 @@ class AnchorsPlanner:
             - Observable features are not modified in this method.
             """
         for i, f_name in enumerate(controllable_features):
+            feature_index = self.controllableFeatureIndices[i]
             a, b = polytope[f_name][0], polytope[f_name][1]
-            if a == -inf:
-                a = 0
-            if b == inf:
-                b = 100
-            if(sample[i] < int(a)):
-                sample[i] = int(a)+ np.abs(b-a)/10
-            elif(sample[i] > int(b)):
-                sample[i] = int(b) - np.abs(b-a)/10
+            domain_a, domain_b = self.controllableFeatureDomains[i]
+            a = max(a, domain_a)
+            b = min(b, domain_b)
+            if sample[feature_index] < a:
+                sample[feature_index] = a + np.abs(b-a)/10
+            elif sample[feature_index] > b:
+                sample[feature_index] = b - np.abs(b-a)/10
         return sample
 
     def findBestAdaptation(self, sample, polytope, controllable_features, threshold=0.8, max_iter=1000):
@@ -827,10 +816,9 @@ class AnchorsPlanner:
         delta_controllable_features = []
         for i, f_name in enumerate(controllable_features): #define the delta for each interval
             a, b = polytope[f_name][0], polytope[f_name][1]
-            if a == -inf:
-                a = 0
-            if b == inf:
-                b = 100
+            domain_a, domain_b = self.controllableFeatureDomains[i]
+            a = max(a, domain_a)
+            b = min(b, domain_b)
             delta = (b-a) * 0.05
             delta_controllable_features.append(delta)
             
@@ -854,9 +842,12 @@ class AnchorsPlanner:
 
             for coeff in [1, -1]:
                 for i, f_name in enumerate(controllable_features):
-                    tmp_sample[i] =adapted_sample[i] + coeff*delta_controllable_features[i]
+                    tmp_sample = adapted_sample.copy()
+                    feature_index = self.controllableFeatureIndices[i]
+                    tmp_sample[feature_index] = adapted_sample[feature_index] + coeff*delta_controllable_features[i]
                     n_iter += 1
-                    if tmp_sample[i] >= min(polytope[f_name][1], 100) or tmp_sample[i] <= max(0,polytope[f_name][0]): #If we are outside the bounds of the polytope, we need to stop
+                    domain_a, domain_b = self.controllableFeatureDomains[i]
+                    if tmp_sample[feature_index] >= min(polytope[f_name][1], domain_b) or tmp_sample[feature_index] <= max(domain_a, polytope[f_name][0]): #If we are outside the bounds of the polytope, we need to stop
                         outOfBounds_feature_counter += 1
                     else:
                         probs = vecPredictProba(self.reqClassifiers, tmp_sample.reshape(1, -1))

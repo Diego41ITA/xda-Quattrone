@@ -173,9 +173,11 @@ class CustomPlanner:
                 n_possibilities = np.prod([len(m) for m in maximals])
 
             possibilities = cartesian_product(*maximals)
-            possibilities = np.append(possibilities,
-                                      np.repeat([row[self.externalFeatureIndices]], possibilities.shape[0], axis=0),
-                                      axis=1)
+            full_possibilities = np.repeat(
+                np.asarray(row)[np.newaxis, :], possibilities.shape[0], axis=0
+            )
+            full_possibilities[:, self.controllableFeatureIndices] = possibilities
+            possibilities = full_possibilities
 
             """
             print(len(possibilities))

@@ -1,4 +1,5 @@
 import numpy as np
+import ast
 import re
 import itertools
 from math import inf
@@ -14,7 +15,14 @@ from anchor import anchor_tabular
 import pandas as pd
 from multiprocessing import Pool, cpu_count
 
-from util import resolve_anchor_output_paths, vecPredictProba, cartesian_product
+from util import (
+    filter_polytopes_for_mode,
+    point_to_polytopes_distances,
+    resolve_anchor_output_paths,
+    resolve_experiment_config,
+    vecPredictProba,
+    cartesian_product,
+)
 
 from typing import Optional, Tuple
 
@@ -73,6 +81,7 @@ class WIPPlanner:
                  controllableFeatureIndices, controllableFeatureDomains,
                  optimizationDirections, optimizationScoreFunction, delta, targetConfidence, build_explanations,
                  n_neighbors=5, n_startingSolutions=5, max_fallback_combinations=2000,
+                 experiment_config=None,
                  ):
         """
         Initializes the WIP planner.
@@ -173,10 +182,13 @@ class WIPPlanner:
         )
         self.build_explanations = build_explanations
         self.training_dataset = training_dataset
+        self.experiment_config = experiment_config or resolve_experiment_config()
         (
             self.anchor_explanations_path,
             self.anchor_rules_path,
-        ) = resolve_anchor_output_paths(training_dataset)
+        ) = resolve_anchor_output_paths(
+            self.experiment_config, for_write=self.build_explanations
+        )
         self.observableFeatureIndices = [i for i in range(feature_number) if i not in controllableFeatureIndices]
         self.observableFeaturesNames = [feature_names[i] for i in self.observableFeatureIndices]
         self.controllableFeatureDomains = controllableFeatureDomains
@@ -285,7 +297,7 @@ class WIPPlanner:
         # for a sample to contribute anchor rules. Lower K yields more anchors;
         # higher K yields fewer but typically stronger anchors.
         n_samples = datasets[0].train.shape[0]
-        K = 12
+        K = self.experiment_config.wip_min_satisfied_requirements
         pred_matrix = np.zeros((n_samples, len(reqNames)), dtype=int)
         for i in range(len(reqNames)):
             pred_matrix[:, i] = reqClassifiers[i].predict(datasets[i].train)
@@ -373,20 +385,38 @@ class WIPPlanner:
         print(f"{self.anchor_rules_path} saved successfully!")
 
         # b) Anchors explanations
-        with open(self.anchor_explanations_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["n_satisfied_reqs", "satisfied_reqs"] + feature_names)
-            for idx, exp in zip(selected_samples, self.explanations):
-                n_satisfied = int(pred_matrix[idx].sum())
-                satisfied = [reqNames[i] for i, val in enumerate(pred_matrix[idx]) if val == 1]
-                row = [n_satisfied, ";".join(satisfied)]
-                for feat in feature_names:
-                    row.append(str(exp[feat]))
-                writer.writerow(row)
+        self._write_anchor_explanations_csv(
+            self.anchor_explanations_path,
+            feature_names,
+            reqNames,
+            selected_samples,
+            pred_matrix,
+            self.explanations,
+        )
 
         print(
             f"{self.anchor_explanations_path} saved successfully with {len(self.explanations)} samples!"
         )
+
+    @staticmethod
+    def _write_anchor_explanations_csv(
+        output_path,
+        feature_names,
+        req_names,
+        selected_samples,
+        predictions,
+        explanations,
+    ):
+        with open(output_path, "w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["n_satisfied_reqs", "satisfied_reqs", *feature_names])
+            for idx, exp in zip(selected_samples, explanations):
+                prediction = predictions[idx]
+                n_satisfied = int(np.sum(prediction))
+                satisfied = [req_names[i] for i, value in enumerate(prediction) if value == 1]
+                row = [n_satisfied, ";".join(satisfied)]
+                row.extend(str(exp[feature]) for feature in feature_names)
+                writer.writerow(row)
 
     def __load_anchor_explanations(self, csv_path, min_satisfied_reqs):
         """
@@ -427,12 +457,16 @@ class WIPPlanner:
 
                 for feat in self.feature_names:
                     # Interval stored as string: "(a, b, False, False)"
-                    anchor[feat] = eval(
-                        row[feat], {"__builtins__": {}}, {"inf": inf}
-                    )
+                    interval_text = str(row[feat]).replace("-inf", "-1e309")
+                    interval_text = interval_text.replace("inf", "1e309")
+                    anchor[feat] = ast.literal_eval(interval_text)
                 explanations.append(anchor)
 
-        self.explanations = explanations
+        self.explanations = filter_polytopes_for_mode(
+            explanations,
+            self.experiment_config.wip_mode,
+            len(self.reqNames),
+        )
 
         print(f"Loaded {len(self.explanations)} anchor explanations from {csv_path} "
             f"with n_satisfied_reqs >= {min_satisfied_reqs}")
@@ -684,89 +718,29 @@ class WIPPlanner:
         - The observable features are assumed to start at index offset `len(controllable_features)` in `x`.
         """
 
-        min_dist_controllable = np.inf
-        min_dist_index_controllable = -1
-
-        min_dist_observable = np.inf
-        min_dist_index_observable = -1
-
-        contr_f_dist = np.zeros(len(explanations_table))
-        obs_f_dist = np.zeros(len(explanations_table))
-
-        # livelli di requisiti disponibili
-        req_levels = sorted(
-            {exp["n_satisfied_reqs"] for exp in explanations_table},
-            reverse=True
+        contr_f_dist, obs_f_dist = point_to_polytopes_distances(
+            x, explanations_table, self.experiment_config
         )
-
-        zero_found = False
-
-        for req in req_levels:
-
-            # indici dei polytopes con questo numero di requisiti
-            indices = [
-                i for i, exp in enumerate(explanations_table)
-                if exp["n_satisfied_reqs"] == req
+        zero_observable = np.flatnonzero(obs_f_dist == 0)
+        if len(zero_observable):
+            best_level = max(
+                explanations_table[index]["n_satisfied_reqs"]
+                for index in zero_observable
+            )
+            eligible = [
+                index
+                for index in zero_observable
+                if explanations_table[index]["n_satisfied_reqs"] == best_level
             ]
+            min_dist_index_observable = min(
+                eligible, key=lambda index: contr_f_dist[index]
+            )
+        else:
+            min_dist_index_observable = int(np.argmin(obs_f_dist))
 
-            for i in indices:
-
-                # ---------- controllable ----------
-                for j, f_name in enumerate(controllable_features):
-
-                    a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-
-                    if a == -inf:
-                        a = 0
-                    if b == inf:
-                        b = 100
-
-                    if x[j] < a:
-                        d = (a - x[j]) ** 2
-                        contr_f_dist[i] += d
-                    elif x[j] > b:
-                        d = (b - x[j]) ** 2
-                        contr_f_dist[i] += d
-
-                # ---------- observable ----------
-                for j, f_name in enumerate(observable_features):
-
-                    jj = j + 2  # observable features start after controllable features in x
-
-                    a, b = explanations_table[i][f_name][0], explanations_table[i][f_name][1]
-
-                    if a == -inf:
-                        a = 0
-                    if b == inf:
-                        b = 100
-
-                    if x[jj] < a:
-                        d = (a - x[jj]) ** 2
-                        obs_f_dist[i] += d
-                    elif x[jj] > b:
-                        d = (b - x[jj]) ** 2
-                        obs_f_dist[i] += d
-
-                # controllo distanza zero
-                if obs_f_dist[i] == 0:
-                    min_dist_controllable = contr_f_dist[i]
-                    min_dist_observable = 0
-                    min_dist_index_controllable = i
-                    min_dist_index_observable = i
-                    zero_found = True
-                    break
-
-            if zero_found:
-                break
-
-        # se non abbiamo trovato distanza zero
-        if not zero_found:
-
-            min_dist_index_controllable = np.argmin(contr_f_dist)
-            min_dist_controllable = contr_f_dist[min_dist_index_controllable]
-
-            min_dist_index_observable = np.argmin(obs_f_dist)
-            min_dist_observable = obs_f_dist[min_dist_index_observable]
+        min_dist_index_controllable = int(np.argmin(contr_f_dist))
+        min_dist_controllable = contr_f_dist[min_dist_index_controllable]
+        min_dist_observable = obs_f_dist[min_dist_index_observable]
 
         return (
             contr_f_dist,
@@ -986,7 +960,7 @@ class WIPPlanner:
 
         return finalAdaptation, finalAdaptationConfidence, totalIterations
 
-    def evaluate_sample(self, sample, nreqs, threshold = 0.8):
+    def evaluate_sample(self, sample, threshold = 0.8):
         """
         Method:
         1. Computes the minimum distance from the sample to polytopes (controllable and observable).
@@ -1001,16 +975,6 @@ class WIPPlanner:
         ----------
         sample : array of shape (n_features,)
             Feature vector representing the system state.
-        nreqs : int
-            Minimum number of satisfied requirements required when loading the
-            anchor polytopes for this sample.
-
-            In the current evaluator this value is computed as the number of
-            ground-truth satisfied requirements for the test row
-            (`num_reqs_satisfied`). This makes WIP compare the sample only
-            against anchors extracted from training samples that satisfy at
-            least as many requirements.
-
         threshold : float, optional (default = 0.8)
             Minimum acceptable confidence level. If predictions fall below this value,
             sample adaptation is attempted.
@@ -1038,7 +1002,17 @@ class WIPPlanner:
 
         # Dynamically filter the available anchor/polytopes according to the
         # requested minimum number of satisfied requirements.
-        self.__load_anchor_explanations(self.anchor_explanations_path, nreqs)
+        self.__load_anchor_explanations(
+            self.anchor_explanations_path,
+            self.experiment_config.wip_min_satisfied_requirements,
+        )
+
+        if not self.explanations:
+            adapted, confidence, n_iter = self.findPdpFallbackAdaptation(sample, threshold)
+            outputs = np.array(
+                [model.predict(adapted.reshape(1, -1))[0] for model in self.reqClassifiers]
+            )
+            return adapted, confidence, outputs, n_iter
 
         contr_f_dist, obs_f_dist, min_dist_controllable, min_dist_index_controllable, min_dist_observable, min_dist_index_observable = self.min_dist_polytope(sample, self.explanations, self.controllableFeaturesNames, self.observableFeaturesNames)
 
@@ -1130,16 +1104,16 @@ class WIPPlanner:
             """
 
         for i, f_name in enumerate(controllable_features):
+            feature_index = self.controllableFeatureIndices[i]
             a, b = polytope[f_name][0], polytope[f_name][1]
             #è corretto?
-            if a == -inf:
-                a = 0
-            if b == inf:
-                b = 100
-            if(sample[i] < int(a)):
-                sample[i] = int(a)+ np.abs(b-a)/10
-            elif(sample[i] > int(b)):
-                sample[i] = int(b) - np.abs(b-a)/10
+            domain_a, domain_b = self.controllableFeatureDomains[i]
+            a = max(a, domain_a)
+            b = min(b, domain_b)
+            if sample[feature_index] < a:
+                sample[feature_index] = a + np.abs(b-a)/10
+            elif sample[feature_index] > b:
+                sample[feature_index] = b - np.abs(b-a)/10
         return sample
 
     def findBestAdaptation(self, sample, polytope, controllable_features, threshold=0.8, max_iter=1000):
@@ -1187,10 +1161,9 @@ class WIPPlanner:
         delta_controllable_features = []
         for i, f_name in enumerate(controllable_features): #define the delta for each interval
             a, b = polytope[f_name][0], polytope[f_name][1]
-            if a == -inf:
-                a = 0
-            if b == inf:
-                b = 100
+            domain_a, domain_b = self.controllableFeatureDomains[i]
+            a = max(a, domain_a)
+            b = min(b, domain_b)
             delta = (b-a) * 0.05
             delta_controllable_features.append(delta)
             
@@ -1214,9 +1187,12 @@ class WIPPlanner:
 
             for coeff in [1, -1]:
                 for i, f_name in enumerate(controllable_features):
-                    tmp_sample[i] =adapted_sample[i] + coeff*delta_controllable_features[i]
+                    tmp_sample = adapted_sample.copy()
+                    feature_index = self.controllableFeatureIndices[i]
+                    tmp_sample[feature_index] = adapted_sample[feature_index] + coeff*delta_controllable_features[i]
                     n_iter += 1
-                    if tmp_sample[i] >= min(polytope[f_name][1], 100) or tmp_sample[i] <= max(0,polytope[f_name][0]): #If we are outside the bounds of the polytope, we need to stop
+                    domain_a, domain_b = self.controllableFeatureDomains[i]
+                    if tmp_sample[feature_index] >= min(polytope[f_name][1], domain_b) or tmp_sample[feature_index] <= max(domain_a, polytope[f_name][0]): #If we are outside the bounds of the polytope, we need to stop
                         outOfBounds_feature_counter += 1
                     else:
                         probs = vecPredictProba(self.reqClassifiers, tmp_sample.reshape(1, -1))
