@@ -1,0 +1,706 @@
+sample_index,rules,n_satisfied_reqs,pred_req_0,real_req_0,pred_req_1,real_req_1,pred_req_2,real_req_2
+7,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -1.00; b'p_x' > 2.51; b'road_shape' = 0.0; b'p_x' <= 4.89; b'road_shape' = 0.0,2,1,1,1,0,0,0
+10,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,0,1,1,0,0
+18,b'p_y' <= 2.52; b'orientation' <= -1.00; 27.56 < b'car_speed' <= 39.12; b'p_y' <= 2.52,2,1,1,1,0,0,0
+20,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,0,1,0
+23,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89,3,1,1,1,0,1,0
+26,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' <= 14.00; b'road_shape' = 0.0; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,0,0,0
+27,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,1,1,0
+29,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_y' <= 2.52; 16.35 < b'car_speed' <= 39.12; b'weather' = 2.0,2,1,0,1,0,0,0
+35,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,0,1,0,1,0
+38,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+40,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+48,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+54,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'weather' = 2.0; b'road_shape' = 1.0,2,1,0,1,1,0,1
+55,b'p_y' <= 2.52; b'p_x' <= 4.89; b'weather' = 2.0,2,1,0,1,1,0,0
+57,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'weather' = 0.0,3,1,0,1,0,1,0
+61,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+65,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+66,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'weather' = 0.0,2,1,1,1,0,0,0
+67,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'car_speed' <= 39.12; b'weather' = 1.0,3,1,1,1,1,1,1
+68,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0,2,1,1,0,0,1,0
+70,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+75,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > 14.00; b'p_x' <= 2.51,2,1,1,1,1,0,1
+78,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > 14.00; b'p_x' > 2.51; b'road_shape' = 0.0; b'p_x' <= 4.89; b'road_shape' = 0.0,2,1,0,1,1,0,0
+80,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,2,1,0,0,0,1,0
+81,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' > 7.47; b'road_shape' = 1.0; b'orientation' <= -15.00; b'car_speed' > 16.35; b'p_y' <= 7.67,2,1,1,1,1,0,1
+86,b'p_y' <= 5.08; b'car_speed' <= 27.56; -15.00 < b'orientation' <= 14.00; b'road_shape' = 1.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'weather' = 1.0,3,1,1,1,0,1,0
+92,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,1,1,1,1,1
+96,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+97,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'weather' = 0.0; b'road_shape' = 2.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'orientation' <= -15.00; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+103,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,0,0,0
+106,b'p_y' <= 2.52; b'orientation' <= -15.00; 16.35 < b'car_speed' <= 39.12; b'weather' = 2.0; b'p_y' <= 2.52; b'road_shape' = 2.0,2,1,0,1,1,0,1
+107,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'weather' = 0.0,3,1,1,1,1,1,1
+110,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+112,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'weather' = 2.0,2,1,1,1,1,0,1
+114,b'p_y' <= 5.08; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+115,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > 14.00; b'p_x' <= 4.89,2,1,0,1,1,0,0
+119,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 2.51,3,1,1,1,1,1,1
+121,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0; b'orientation' > 14.00,3,1,0,1,1,1,0
+122,b'p_y' <= 2.52; b'p_y' <= 2.52; b'car_speed' <= 16.35,2,1,1,1,1,0,1
+124,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+127,b'p_y' <= 5.08; b'weather' = 0.0; b'p_x' > 7.47; b'orientation' <= -1.00; b'car_speed' > 39.12; b'road_shape' = 1.0; b'weather' = 0.0; b'p_y' <= 7.67,2,1,1,1,1,0,1
+136,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+137,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,0,1,0,1,0
+142,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00,2,1,1,1,1,0,1
+145,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'road_shape' = 1.0,3,1,1,1,1,1,1
+149,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+154,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; b'p_x' > 4.89; b'p_x' <= 7.47; b'weather' = 1.0; b'p_y' <= 7.67,2,1,0,1,1,0,0
+160,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,0,1,1,0,1
+162,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,0
+163,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,1
+165,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'weather' = 0.0; b'road_shape' = 2.0,3,1,0,1,1,1,0
+167,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'road_shape' = 0.0; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; 2.51 < b'p_x' <= 7.47,3,1,1,1,1,1,1
+168,b'p_y' <= 2.52; b'p_x' <= 7.47; b'road_shape' = 0.0; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+171,b'p_y' <= 2.52; b'orientation' <= 14.00; b'car_speed' > 27.56; b'road_shape' = 1.0; b'p_y' <= 2.52; b'weather' = 1.0,2,1,0,1,1,0,0
+174,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+175,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'p_x' > 2.51; b'road_shape' = 1.0; b'orientation' <= -15.00; b'p_x' <= 4.89,2,1,1,1,1,0,1
+177,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+179,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,1,1,1,1,1
+180,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+181,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_x' <= 2.51; b'weather' = 2.0,2,0,0,1,1,1,1
+182,b'p_y' <= 2.52; b'p_x' <= 7.47,2,1,1,1,0,0,0
+188,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,1,1,0,0,0
+189,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' > 7.47; b'orientation' > -1.00; b'weather' = 1.0; b'road_shape' = 0.0; b'orientation' <= 14.00; b'p_y' <= 5.08; 16.35 < b'car_speed' <= 39.12,2,1,0,1,1,0,0
+191,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 5.08,2,1,0,1,1,0,0
+196,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0,3,1,0,1,1,1,1
+198,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'weather' = 0.0,3,1,1,1,0,1,0
+200,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 16.35; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 0.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+207,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+209,b'p_y' <= 5.08; b'car_speed' <= 16.35; -1.00 < b'orientation' <= 14.00; b'road_shape' = 1.0; b'p_x' <= 2.51,2,1,0,1,1,0,0
+210,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,0,1,1,1,0
+211,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,2,1,1,1,1,0,1
+213,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'weather' = 2.0,3,1,0,1,0,1,0
+216,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' <= 4.89,2,0,1,1,0,1,0
+218,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+219,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+222,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 4.89; b'road_shape' = 1.0; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,0,1,1,0,1
+223,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_x' > 4.89; b'orientation' > 14.00; b'p_x' <= 7.47; b'car_speed' > 27.56,2,1,0,1,1,0,0
+227,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; 2.51 < b'p_x' <= 7.47; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+229,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+235,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 2.52; b'p_x' <= 4.89; 16.35 < b'car_speed' <= 27.56; -15.00 < b'orientation' <= 14.00; b'road_shape' = 0.0,3,1,1,1,1,1,1
+240,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,0,1,1,1,1
+242,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 2.51,2,1,0,1,1,0,0
+247,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 2.51; b'orientation' > -15.00; b'road_shape' = 0.0; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89; b'weather' = 2.0,3,1,1,1,1,1,1
+249,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,1
+250,b'p_x' <= 4.89; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0; b'car_speed' <= 39.12,2,0,0,1,0,1,0
+261,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,1
+262,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 16.35,3,1,0,1,1,1,0
+263,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_x' > 4.89; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+268,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+269,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+270,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+274,b'p_y' <= 2.52; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00,2,1,1,0,0,1,0
+276,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,1,1,1
+279,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00,3,1,1,1,1,1,1
+282,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 2.52; b'car_speed' <= 27.56; b'weather' = 0.0; b'p_x' <= 7.47; b'orientation' <= 14.00,3,1,1,1,1,1,1
+283,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,1,1,1,0,1
+291,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+292,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'orientation' > -1.00; b'p_x' <= 4.89,2,1,1,1,0,0,0
+293,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+297,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+300,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 7.47; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+309,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'car_speed' <= 39.12; b'road_shape' = 1.0,3,1,1,1,1,1,1
+310,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+312,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+315,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 0.0; b'p_x' <= 4.89,2,1,1,1,1,0,1
+318,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -1.00; b'p_x' > 2.51; b'road_shape' = 1.0; b'p_x' <= 4.89,2,1,1,1,0,0,0
+319,b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; 2.51 < b'p_x' <= 7.47,2,0,1,1,1,1,1
+322,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_y' <= 2.52; 16.35 < b'car_speed' <= 39.12,2,1,1,1,1,0,1
+326,b'p_y' <= 2.52; b'p_y' <= 5.08; b'car_speed' > 39.12; b'weather' = 2.0; b'road_shape' = 2.0,2,1,0,1,1,0,0
+327,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+331,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,0,0,0
+333,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+335,b'p_y' <= 5.08; b'car_speed' <= 16.35; 4.89 < b'p_x' <= 7.47; b'orientation' > -1.00; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 7.67,2,1,0,1,1,0,0
+339,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 7.47,3,1,1,1,1,1,1
+340,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'road_shape' = 2.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' <= 4.89,3,1,1,1,0,1,0
+343,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'weather' = 0.0,3,1,0,1,1,1,0
+344,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00,2,1,1,1,1,0,1
+347,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12,2,1,1,1,1,0,1
+358,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+359,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'road_shape' = 1.0,3,1,0,1,1,1,0
+362,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 0.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'weather' = 0.0,3,1,1,1,0,1,0
+363,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+365,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -15.00; b'p_x' <= 2.51,2,1,1,1,1,0,1
+387,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 2.52,2,1,0,1,0,0,0
+390,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+391,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+395,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52,2,1,1,1,0,0,0
+412,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 1.0,2,1,1,1,1,0,1
+413,b'p_y' <= 2.52; b'orientation' <= -15.00; 16.35 < b'car_speed' <= 39.12; b'p_y' <= 7.67; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'road_shape' = 1.0,3,1,1,1,1,1,1
+420,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,0,1,0
+425,b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 2.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,0,1,1,1,0
+426,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'road_shape' = 1.0; b'p_x' > 2.51; b'orientation' > -15.00; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 4.89,3,1,1,1,1,1,1
+430,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+432,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 7.67,2,1,1,1,1,0,1
+439,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+440,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00,3,1,1,1,1,1,1
+442,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,2,1,0,0,0,1,0
+445,b'p_x' <= 2.51; b'p_y' <= 5.08; b'orientation' <= -15.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,2,0,0,1,1,1,0
+449,b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_y' <= 5.08; b'road_shape' = 2.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,1,1,1,1,1
+456,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'weather' = 0.0; b'orientation' <= 14.00,3,1,1,1,0,1,0
+458,b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 39.12; b'weather' = 0.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+459,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; 4.89 < b'p_x' <= 7.47; b'road_shape' = 1.0; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,1,1,1,0,1
+461,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+471,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+473,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+475,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,1,1,1,1,1
+478,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+479,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_x' <= 7.47; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+489,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+495,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > 14.00; b'road_shape' = 2.0; b'p_x' > 4.89; b'p_x' <= 7.47; 2.52 < b'p_y' <= 5.08,2,1,1,1,0,0,0
+498,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 7.47; b'car_speed' <= 39.12,3,1,1,1,0,1,0
+507,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,0
+510,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89,3,1,0,1,1,1,0
+512,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'weather' = 0.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; b'car_speed' <= 27.56; 2.51 < b'p_x' <= 7.47,3,1,1,1,1,1,1
+513,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00,2,1,1,1,1,0,1
+514,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -15.00,3,1,1,1,1,1,1
+515,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12,2,1,0,1,1,0,0
+518,b'p_y' <= 5.08; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 2.51,2,1,1,1,0,0,0
+521,b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' > 16.35; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 1.0,3,1,0,1,0,1,0
+527,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'weather' = 0.0,3,1,0,1,1,1,0
+528,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+534,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+535,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 2.51; b'orientation' > 14.00; b'road_shape' = 0.0,3,1,1,1,1,1,1
+536,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,1,1,1,1,1
+537,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,1,1,1
+539,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > 14.00; b'road_shape' = 0.0; b'weather' = 1.0; b'p_x' <= 4.89; b'p_x' <= 4.89,2,1,0,1,0,0,0
+544,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+545,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+546,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+547,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'weather' = 0.0,3,1,1,1,0,1,0
+552,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'orientation' > -15.00; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -1.00; b'car_speed' <= 27.56; 2.51 < b'p_x' <= 4.89; b'road_shape' = 2.0; b'weather' = 0.0,3,1,0,1,1,1,1
+558,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'weather' = 0.0,3,1,0,1,1,1,1
+563,b'p_y' <= 5.08; b'car_speed' <= 27.56; -1.00 < b'orientation' <= 14.00; b'road_shape' = 2.0; b'p_x' > 2.51; b'p_x' <= 4.89; b'orientation' <= 14.00,2,1,1,1,0,0,0
+569,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' > 16.35,2,1,1,1,1,0,1
+574,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > 14.00; b'p_x' > 2.51; b'weather' = 1.0; b'p_x' <= 4.89,2,1,1,1,1,0,1
+575,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 4.89; b'weather' = 1.0; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; 4.89 < b'p_x' <= 7.47,3,1,1,1,1,1,1
+581,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56,2,1,0,0,1,1,0
+582,b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -15.00; b'weather' = 0.0,2,0,1,1,0,1,0
+585,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'road_shape' = 2.0,2,1,0,1,1,0,0
+592,b'p_y' <= 2.52; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56,2,1,0,0,0,1,0
+595,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+599,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' > -1.00; b'weather' = 1.0; b'road_shape' = 0.0; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'p_y' <= 7.67,2,1,0,1,1,0,0
+601,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,0,1,1,0,0
+604,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -1.00 < b'orientation' <= 14.00; b'p_x' <= 4.89,2,1,1,1,0,0,0
+605,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,1,1,1
+606,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+612,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'road_shape' = 2.0,3,1,1,1,0,1,0
+620,b'p_y' <= 2.52; b'p_x' <= 4.89; b'road_shape' = 0.0,2,1,1,1,1,0,1
+623,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+625,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'weather' = 0.0,2,1,1,0,0,1,0
+629,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 1.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 39.12; b'road_shape' = 1.0,3,1,1,1,1,1,1
+634,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+639,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12; b'road_shape' = 1.0,3,1,1,1,1,1,1
+641,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'weather' = 0.0; 4.89 < b'p_x' <= 7.47; b'road_shape' = 1.0,3,1,1,1,0,1,0
+647,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,1,1,1
+652,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' <= 4.89; -15.00 < b'orientation' <= 14.00; b'weather' = 2.0; b'road_shape' = 1.0,2,0,1,1,1,1,1
+653,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+656,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,0,1,1,1,1
+657,b'p_y' <= 2.52; b'orientation' <= -1.00; 16.35 < b'car_speed' <= 39.12; b'p_y' <= 2.52,2,1,1,1,1,0,1
+658,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12; b'weather' = 0.0,2,1,0,1,1,0,0
+662,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+663,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' > -1.00; b'road_shape' = 2.0; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+669,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'road_shape' = 2.0,3,1,1,1,1,1,1
+670,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+672,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+676,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,0,1,1,1,0
+677,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -1.00; b'road_shape' = 1.0; b'p_x' <= 4.89,2,1,1,1,1,0,1
+679,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0; b'orientation' > -1.00,3,1,0,1,1,1,0
+680,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' > -15.00; b'weather' = 1.0; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'road_shape' = 2.0,2,1,0,1,1,0,0
+682,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,0,1,1,0,0
+684,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,0,1,0
+685,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_x' <= 2.51; b'weather' = 2.0,2,0,0,1,1,1,0
+690,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+691,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -15.00; b'p_x' > 2.51; b'road_shape' = 1.0; b'orientation' <= -1.00; b'road_shape' = 1.0; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_y' > 2.52,2,1,1,1,1,0,1
+694,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' > -15.00; b'weather' = 1.0; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_y' <= 5.08,2,1,0,1,1,0,0
+702,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+706,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'road_shape' = 2.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -15.00; b'car_speed' <= 39.12; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+709,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,0,1,1,1,0
+714,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,1,1,1,1,1
+715,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'car_speed' > 16.35,2,1,1,1,0,0,0
+716,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,0,1,0
+721,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,1,1,1,0,1
+722,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'road_shape' = 2.0; b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0; b'p_x' > 2.51,3,1,0,1,1,1,0
+728,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+729,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,0,0,0
+739,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; -1.00 < b'orientation' <= 14.00; b'p_x' > 2.51; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+740,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'orientation' <= 14.00,3,1,1,1,0,1,0
+743,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+749,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+750,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+752,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 4.89,2,0,1,1,1,1,1
+753,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'p_y' <= 5.08; b'weather' = 0.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'road_shape' = 2.0; b'p_x' <= 7.47,3,1,0,1,1,1,1
+759,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00,2,1,1,1,1,0,1
+762,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,1,1,1,0,1
+766,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08; b'p_y' <= 2.52; b'car_speed' <= 39.12; b'p_x' <= 7.47; b'road_shape' = 0.0,3,1,1,1,1,1,1
+774,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,1,1,0,1,0
+779,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+782,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'road_shape' = 2.0,3,1,0,1,0,1,0
+787,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 2.51,3,1,0,1,0,1,0
+791,b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; 2.51 < b'p_x' <= 7.47,2,0,0,1,1,1,0
+795,b'p_y' <= 5.08; b'orientation' > 14.00; b'p_x' <= 4.89,2,1,1,1,1,0,1
+800,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'road_shape' = 0.0; b'orientation' > -1.00; b'weather' = 1.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'orientation' <= 14.00,3,1,0,1,1,1,0
+801,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' <= 7.47; b'p_x' <= 4.89,2,1,1,1,0,0,0
+805,b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89,2,1,1,1,1,0,1
+810,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+814,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,0,1,0,1,0
+822,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'p_x' > 2.51; b'p_x' <= 4.89; b'orientation' <= -15.00,2,1,1,1,0,0,0
+824,b'p_y' <= 2.52; b'orientation' <= 14.00; b'p_y' <= 2.52; b'road_shape' = 2.0; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'road_shape' = 2.0; b'orientation' <= 14.00,3,1,1,1,0,1,0
+825,b'orientation' <= -1.00; b'p_x' <= 7.47; b'car_speed' <= 27.56; b'orientation' <= -15.00; b'p_y' <= 7.67; b'road_shape' = 2.0; b'weather' = 0.0; 4.89 < b'p_x' <= 7.47,2,0,1,1,1,1,1
+828,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+830,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'weather' = 1.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+834,b'p_y' <= 5.08; b'weather' = 0.0; b'p_x' > 4.89; b'road_shape' = 2.0; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,1,1,1,0,1
+838,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; b'p_x' <= 2.51,2,1,0,1,0,0,0
+842,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+854,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+857,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 27.56,3,1,0,1,1,1,1
+858,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 1.0; b'car_speed' > 16.35; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 1.0,3,1,1,1,1,1,1
+866,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'orientation' > -1.00; b'p_x' > 2.51; b'p_x' <= 4.89,2,1,0,1,1,0,0
+869,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00,2,1,1,1,1,0,1
+871,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+872,b'p_y' <= 5.08; b'weather' = 0.0; -1.00 < b'orientation' <= 14.00; b'car_speed' <= 39.12; b'p_x' <= 7.47; b'p_x' <= 2.51,2,1,1,1,0,0,0
+878,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,1,1,1
+879,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56,3,1,0,1,0,1,0
+887,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'weather' = 1.0,3,1,1,1,1,1,1
+891,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,1,1,1,0,1
+894,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,0
+895,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,1,1,0
+896,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12; b'p_y' <= 5.08,2,1,1,1,1,0,1
+900,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 2.52,2,1,1,1,1,0,1
+902,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+908,b'p_y' <= 2.52; b'p_x' <= 7.47; b'weather' = 2.0; b'p_y' <= 5.08,2,1,0,1,1,0,0
+912,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+916,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,0,1,1,1,0
+926,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+933,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 27.56; b'p_x' <= 4.89; b'orientation' <= 14.00; b'road_shape' = 1.0; b'weather' = 2.0,3,1,0,1,1,1,0
+934,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+940,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; -15.00 < b'orientation' <= 14.00,3,1,0,1,1,1,0
+945,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+951,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+957,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+974,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,1
+975,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 1.0,2,1,1,0,0,1,0
+976,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'road_shape' = 1.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+982,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+987,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,0
+988,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 2.0,2,1,0,1,1,0,0
+990,b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; b'car_speed' <= 27.56; b'p_x' > 2.51,2,0,1,1,1,1,1
+997,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 7.47; b'orientation' <= -15.00; 2.52 < b'p_y' <= 5.08; b'weather' = 0.0,2,1,0,1,1,0,0
+999,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+1001,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,0,1,1,1,1
+1004,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; 2.51 < b'p_x' <= 7.47; b'road_shape' = 0.0; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1007,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1009,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_y' <= 2.52; b'car_speed' <= 39.12; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -1.00,3,1,1,1,1,1,1
+1015,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00,3,1,1,1,1,1,1
+1018,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,1
+1019,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 2.52; b'weather' = 0.0; b'orientation' <= 14.00; b'road_shape' = 2.0; b'car_speed' <= 39.12; b'p_x' <= 7.47,3,1,0,1,1,1,0
+1020,b'p_x' <= 4.89; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -15.00; b'car_speed' <= 39.12; b'road_shape' = 1.0,2,0,1,1,0,1,0
+1021,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,1,1,0,0,0
+1028,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,0,0,0
+1029,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; b'p_x' > 2.51; b'p_x' <= 7.47; b'weather' = 2.0; b'p_y' <= 7.67,2,1,1,1,0,0,0
+1033,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 1.0; b'orientation' > -1.00; b'road_shape' = 2.0; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,1,1,0,0,0
+1038,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,1,1,1,1,1
+1040,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1041,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+1044,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,1,1,0,1,0
+1046,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+1050,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,0,1,1,0,0
+1053,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 7.67,2,1,0,1,0,0,0
+1070,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1071,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' <= -1.00; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0; b'p_x' > 2.51,3,1,0,1,1,1,0
+1075,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08; b'weather' = 1.0; b'road_shape' = 0.0,2,1,0,1,1,0,0
+1076,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1080,b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' > 27.56; b'weather' = 0.0; b'p_y' <= 7.67,2,1,0,1,1,0,0
+1088,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1091,b'p_y' <= 2.52; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'road_shape' = 2.0,2,1,1,0,0,1,0
+1095,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1099,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_x' > 7.47; b'road_shape' = 2.0; b'orientation' <= -15.00; b'road_shape' = 2.0; b'weather' = 0.0; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; b'car_speed' <= 39.12; b'p_x' > 4.89,3,1,1,1,0,1,0
+1101,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'orientation' > -1.00; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1103,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,1,1,0,0,0
+1105,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' <= 4.89,2,0,0,1,0,1,0
+1108,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+1110,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' > 39.12,2,1,1,1,0,0,0
+1114,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12; b'p_y' <= 2.52,2,1,1,1,0,0,0
+1121,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+1122,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1125,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' > 2.51,3,1,0,1,1,1,0
+1126,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1134,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,1,1,0
+1138,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35; b'p_x' <= 2.51,3,1,1,1,1,1,1
+1143,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+1147,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_y' <= 2.52; b'road_shape' = 2.0; b'car_speed' > 16.35,2,1,0,1,0,0,0
+1152,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00,2,1,0,1,1,0,0
+1153,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1154,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' <= 14.00; b'orientation' <= -15.00; b'weather' = 2.0; b'road_shape' = 2.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' > 4.89,3,1,1,1,1,1,1
+1155,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1157,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,1,1,0,0,0
+1164,b'p_x' <= 7.47; b'orientation' <= -15.00; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_y' <= 7.67; b'road_shape' = 2.0; b'p_x' > 4.89,2,0,0,1,1,1,1
+1166,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1167,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,0,1,1,1,1
+1175,b'p_y' <= 5.08; b'weather' = 0.0; b'p_x' > 4.89; b'orientation' > -1.00; b'road_shape' = 1.0; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+1180,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_y' <= 2.52; 27.56 < b'car_speed' <= 39.12,2,1,1,1,1,0,1
+1182,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+1184,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'road_shape' = 0.0,3,1,0,1,1,1,0
+1186,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; 16.35 < b'car_speed' <= 27.56,3,1,1,1,1,1,1
+1189,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+1190,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' <= 14.00; b'weather' = 0.0; b'p_y' <= 5.08; b'car_speed' <= 16.35,2,1,1,1,1,0,1
+1202,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -15.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,0,1,0
+1206,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,0,1,1,1,1
+1207,b'p_y' <= 2.52; b'orientation' <= 14.00; b'car_speed' > 39.12; b'p_y' <= 7.67; b'weather' = 0.0,2,1,1,1,1,0,1
+1213,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,0,1,0
+1215,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -15.00; b'p_x' > 4.89; b'weather' = 1.0; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_x' <= 7.47,3,1,1,1,0,1,0
+1216,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 7.47; b'orientation' <= -1.00; b'weather' = 0.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,0,1,0
+1223,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'weather' = 0.0,2,0,1,1,1,1,1
+1229,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,0
+1231,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,0,0,0
+1232,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00; b'weather' = 1.0,3,1,1,1,1,1,1
+1234,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 0.0,2,1,1,0,1,1,1
+1241,b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,2,0,0,1,0,1,0
+1242,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00; b'weather' = 0.0,3,1,0,1,1,1,0
+1248,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,0,1,1,1,0
+1250,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12,2,1,0,1,0,0,0
+1251,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,1,1,0,0,0
+1261,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+1264,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,0,1,1,1,1
+1265,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+1270,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'orientation' <= 14.00,3,1,0,1,1,1,0
+1273,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1274,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 2.0,2,1,1,1,1,0,1
+1275,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'road_shape' = 0.0; b'p_x' <= 2.51,2,1,0,1,0,0,0
+1283,b'p_y' <= 2.52; b'orientation' <= 14.00; b'p_y' <= 2.52; b'car_speed' > 39.12; b'weather' = 2.0; b'road_shape' = 1.0,2,1,0,1,1,0,0
+1286,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,1,1,1
+1290,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+1291,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'weather' = 0.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'weather' = 0.0; b'road_shape' = 1.0,3,1,1,1,1,1,1
+1294,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+1295,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'car_speed' <= 39.12; b'road_shape' = 2.0,3,1,0,1,0,1,0
+1296,b'p_y' <= 2.52; b'p_x' <= 7.47,2,1,0,1,0,0,0
+1297,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 2.51; b'orientation' > -15.00; b'road_shape' = 0.0; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; 2.51 < b'p_x' <= 4.89; b'weather' = 1.0,3,1,1,1,0,1,0
+1305,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+1325,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 1.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1328,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1329,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+1333,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' > -15.00; b'weather' = 1.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0,2,1,1,0,0,1,0
+1335,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; b'road_shape' = 0.0; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51,3,1,0,1,1,1,0
+1337,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' > 14.00; b'road_shape' = 0.0; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' > 16.35,2,1,1,1,0,0,0
+1338,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_x' <= 7.47,3,1,1,1,1,1,1
+1339,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+1340,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,1
+1344,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+1345,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1347,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,0,1,0,1,0
+1356,b'p_y' <= 2.52; b'p_x' <= 4.89; b'road_shape' = 0.0; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'weather' = 0.0,3,1,1,1,1,1,1
+1367,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'p_y' <= 7.67; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'weather' = 0.0; b'orientation' > 14.00,3,1,0,1,1,1,1
+1368,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'car_speed' <= 39.12; b'road_shape' = 2.0,3,1,0,1,0,1,0
+1372,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_x' <= 7.47,3,1,0,1,1,1,0
+1381,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1383,b'p_y' <= 2.52; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00,2,1,1,0,0,1,0
+1386,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+1390,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0,3,1,0,1,0,1,0
+1391,b'p_y' <= 2.52; b'orientation' <= 14.00; b'p_y' <= 2.52; b'weather' = 2.0,2,1,1,1,1,0,1
+1392,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,1,1,1,1,1
+1393,b'p_y' <= 2.52; b'orientation' <= 14.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'car_speed' > 39.12,2,1,0,1,1,0,0
+1394,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,1,1,0,1,0
+1397,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' > 7.47; b'road_shape' = 1.0,2,1,0,0,0,1,0
+1398,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'orientation' > -15.00; b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -1.00; b'car_speed' <= 27.56; 2.51 < b'p_x' <= 4.89; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+1402,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; 2.51 < b'p_x' <= 4.89; b'weather' = 1.0; b'road_shape' = 2.0; b'p_x' <= 4.89; b'p_y' <= 5.08,2,1,0,1,0,0,0
+1403,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1404,b'p_y' <= 2.52; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 16.35; b'orientation' <= 14.00,2,1,1,0,0,1,0
+1405,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,1,1,1,1,1
+1410,b'p_y' <= 2.52; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'road_shape' = 2.0,2,1,1,0,1,1,1
+1423,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1427,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1428,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,0,1,0
+1429,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,1,1,1
+1436,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 7.47; 27.56 < b'car_speed' <= 39.12,3,1,1,1,1,1,1
+1441,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,0,0,0
+1442,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > 14.00; b'p_x' > 2.51; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1443,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+1444,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'weather' = 0.0,3,1,1,1,0,1,0
+1446,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+1447,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00,3,1,1,1,1,1,1
+1448,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+1451,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_y' <= 7.67; b'car_speed' <= 16.35; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,1,1,0
+1456,b'p_y' <= 2.52; b'orientation' <= 14.00; b'weather' = 0.0; b'p_y' <= 7.67; b'car_speed' > 16.35; b'p_y' <= 2.52; 16.35 < b'car_speed' <= 27.56; b'weather' = 0.0; b'orientation' <= 14.00; b'road_shape' = 2.0,3,1,0,1,0,1,0
+1458,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 4.89; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 7.47,3,1,0,1,1,1,0
+1460,b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_y' <= 2.52; b'road_shape' = 1.0; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,1,1,1
+1461,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,3,1,0,1,1,1,1
+1465,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > -1.00; b'p_x' > 4.89; b'road_shape' = 2.0; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1466,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= 14.00; b'car_speed' > 27.56; b'road_shape' = 1.0,2,1,1,1,1,0,1
+1467,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -15.00; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; 4.89 < b'p_x' <= 7.47; b'weather' = 0.0; b'road_shape' = 1.0,3,1,0,1,1,1,1
+1481,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'road_shape' = 1.0,3,1,1,1,0,1,0
+1488,b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0,2,0,0,1,0,1,0
+1495,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1496,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'road_shape' = 2.0; b'orientation' > -15.00; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'weather' = 0.0; b'road_shape' = 2.0; 2.51 < b'p_x' <= 7.47,3,1,1,1,1,1,1
+1497,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 1.0; b'orientation' > -1.00; b'p_x' > 2.51; b'p_x' <= 7.47; b'p_y' <= 5.08; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00,3,1,1,1,0,1,0
+1502,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'road_shape' = 0.0; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 4.89,3,1,0,1,1,1,0
+1505,b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 1.0; b'p_y' <= 2.52; b'car_speed' <= 27.56; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'weather' = 1.0,3,1,0,1,1,1,0
+1506,b'p_y' <= 5.08; b'weather' = 0.0; b'p_x' > 7.47; b'road_shape' = 2.0; b'orientation' <= -15.00; b'p_y' <= 7.67; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; b'p_x' > 4.89,3,1,1,1,1,1,1
+1507,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1510,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,0,1,1,1,0
+1513,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,0,1,0
+1516,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'road_shape' = 1.0; b'p_x' <= 2.51,2,1,0,1,1,0,1
+1529,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > 14.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'orientation' > 14.00; b'road_shape' = 0.0,2,1,1,0,0,1,0
+1530,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+1532,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1537,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,0,1,1,0,1
+1539,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'p_x' <= 7.47; b'road_shape' = 1.0; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'weather' = 2.0,3,1,1,1,1,1,1
+1549,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+1558,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+1561,b'p_x' <= 4.89; b'p_y' <= 5.08; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 4.89; b'road_shape' = 1.0; b'weather' = 2.0,2,0,1,1,1,1,1
+1568,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'orientation' > 14.00; b'road_shape' = 2.0; b'p_x' <= 2.51,2,1,0,1,1,0,0
+1569,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,1,1,1,1,1
+1572,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_y' <= 2.52; b'car_speed' > 27.56,2,1,0,1,1,0,0
+1577,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'weather' = 0.0,2,1,0,0,0,1,0
+1587,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; -15.00 < b'orientation' <= 14.00; b'weather' = 2.0; b'road_shape' = 1.0,2,0,1,1,1,1,1
+1595,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 7.67; b'road_shape' = 0.0,2,1,0,1,1,0,0
+1599,b'p_y' <= 2.52; b'orientation' <= 14.00; b'p_y' <= 2.52; b'road_shape' = 2.0,2,1,1,1,1,0,1
+1600,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,1,1,1,1,1
+1603,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'weather' = 0.0,3,1,0,1,1,1,1
+1606,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 2.52; b'car_speed' > 16.35,2,1,1,1,1,0,1
+1607,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -15.00 < b'orientation' <= -1.00; b'road_shape' = 0.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'weather' = 0.0,3,1,1,1,0,1,0
+1608,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'road_shape' = 1.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1613,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1614,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1615,b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' > 39.12,2,1,1,1,0,0,0
+1616,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1620,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,0,1,1,0,0
+1627,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > 14.00; b'p_x' > 4.89; b'weather' = 1.0; b'road_shape' = 1.0; b'p_x' <= 7.47; b'p_y' <= 5.08; b'weather' = 1.0,2,1,0,1,0,0,0
+1632,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,3,1,0,1,1,1,1
+1639,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+1642,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,0,1,1,1,0
+1644,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'weather' = 0.0,3,1,0,1,1,1,1
+1645,b'p_y' <= 5.08; b'car_speed' <= 16.35; -1.00 < b'orientation' <= 14.00; b'weather' = 1.0; b'road_shape' = 0.0; b'p_x' > 2.51; b'p_x' <= 4.89,2,1,1,1,0,0,0
+1646,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'car_speed' <= 39.12; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1647,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 2.52; b'p_x' <= 4.89; 16.35 < b'car_speed' <= 27.56; -15.00 < b'orientation' <= 14.00; b'weather' = 2.0,3,1,0,1,1,1,1
+1650,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 39.12,3,1,0,1,1,1,1
+1651,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 2.0,2,1,0,1,1,0,0
+1652,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'road_shape' = 0.0; b'orientation' <= 14.00; b'orientation' <= -15.00; 2.52 < b'p_y' <= 7.67; b'p_y' <= 5.08; b'orientation' <= -15.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1659,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'weather' = 0.0; b'car_speed' > 16.35; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+1660,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,0,1,1,1,0
+1662,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+1665,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,0,1,0,1,0
+1666,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 2.51; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+1669,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'road_shape' = 1.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'weather' = 2.0; b'road_shape' = 1.0,3,1,1,1,1,1,1
+1674,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,0,1,0
+1677,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'p_y' <= 5.08; b'weather' = 0.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'orientation' > 14.00; b'road_shape' = 0.0,3,1,0,1,1,1,1
+1679,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'road_shape' = 2.0,2,1,1,0,0,1,0
+1682,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,1,1,0,1,0
+1684,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 4.89; b'road_shape' = 0.0; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; 2.51 < b'p_x' <= 7.47,3,1,1,1,1,1,1
+1694,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1697,b'p_y' <= 2.52; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,2,1,0,0,0,1,0
+1698,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+1699,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'weather' = 0.0; b'road_shape' = 2.0,3,1,1,1,0,1,0
+1701,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,1,1,0
+1702,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1712,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'road_shape' = 1.0; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+1714,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,0,1,1,1,0
+1715,b'p_y' <= 2.52; b'orientation' <= 14.00; b'weather' = 2.0; b'p_y' <= 7.67; 16.35 < b'car_speed' <= 39.12; b'road_shape' = 1.0,2,1,1,1,0,0,0
+1716,b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 1.0; b'car_speed' > 27.56; b'road_shape' = 2.0; b'p_y' <= 2.52,2,1,1,1,1,0,1
+1723,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,1,1,0
+1726,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'weather' = 1.0; b'orientation' <= 14.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' <= 2.51,3,1,1,1,0,1,0
+1727,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+1729,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' > 7.47; b'orientation' <= -15.00; b'p_y' <= 7.67; b'car_speed' <= 39.12,2,1,0,1,1,0,0
+1731,b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'road_shape' = 2.0; b'car_speed' <= 39.12; 2.51 < b'p_x' <= 7.47,2,0,1,1,1,1,1
+1734,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+1736,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1739,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1746,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,1
+1749,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+1756,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' <= 4.89; b'orientation' <= 14.00; b'weather' = 0.0,3,1,1,1,1,1,1
+1763,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0,3,1,1,1,1,1,1
+1766,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 1.0,2,1,0,1,1,0,0
+1767,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 16.35; b'orientation' <= 14.00,3,1,0,1,0,1,0
+1773,b'p_y' <= 2.52; b'orientation' <= -1.00; 27.56 < b'car_speed' <= 39.12; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 39.12; b'weather' = 1.0,3,1,1,1,0,1,0
+1783,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,0,0,0
+1788,b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; 2.51 < b'p_x' <= 4.89,2,0,1,1,1,1,1
+1790,b'p_y' <= 5.08; b'weather' = 0.0; b'orientation' > 14.00; b'car_speed' <= 39.12; b'p_x' <= 4.89; b'road_shape' = 0.0; b'p_x' <= 2.51,2,1,1,1,0,0,0
+1792,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,1,1,1,0,1
+1795,b'p_y' <= 5.08; b'p_x' > 7.47; b'car_speed' <= 39.12; b'orientation' > -15.00; b'weather' = 1.0; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 1.0; b'p_y' <= 7.67,2,1,1,1,0,0,0
+1796,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+1799,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'orientation' <= 14.00; b'road_shape' = 2.0,3,1,0,1,1,1,0
+1800,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'road_shape' = 1.0; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,0,1,1,1,0
+1801,b'p_y' <= 5.08; b'car_speed' <= 16.35; 4.89 < b'p_x' <= 7.47; b'road_shape' = 1.0; b'weather' = 1.0; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 7.47; b'road_shape' = 1.0,3,1,1,1,1,1,1
+1804,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 1.0,2,1,1,1,1,0,1
+1806,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,0,1,1,0,0
+1810,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+1816,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'road_shape' = 1.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 1.0,3,1,0,1,1,1,0
+1818,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1823,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -15.00 < b'orientation' <= 14.00; b'p_x' > 2.51; b'p_x' <= 4.89; b'orientation' <= 14.00,2,1,1,1,1,0,1
+1832,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -15.00; b'road_shape' = 1.0; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'p_x' <= 2.51; b'weather' = 2.0; b'road_shape' = 1.0,3,1,0,1,0,1,0
+1833,b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 2.0; b'p_y' <= 5.08; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1838,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1839,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 4.89; b'road_shape' = 2.0,3,1,0,1,1,1,0
+1840,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1842,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+1845,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -15.00; b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+1849,b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; 2.51 < b'p_x' <= 4.89; b'road_shape' = 1.0,2,0,0,1,0,1,0
+1852,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+1857,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0,3,1,0,1,1,1,0
+1861,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -15.00,3,1,0,1,1,1,1
+1862,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,0,1,1,1,1
+1863,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+1867,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'road_shape' = 0.0,3,1,1,1,0,1,0
+1872,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,1
+1884,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+1893,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'p_x' <= 7.47; b'road_shape' = 2.0,3,1,0,1,1,1,0
+1894,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,0,1,1,0,0
+1896,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1897,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -1.00; b'p_x' <= 4.89,2,1,1,1,1,0,1
+1900,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+1903,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'p_x' > 7.47; b'weather' = 1.0; b'orientation' <= -15.00; b'road_shape' = 2.0; 2.52 < b'p_y' <= 7.67; 27.56 < b'car_speed' <= 39.12,2,1,0,1,1,0,1
+1905,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' <= 2.51,2,1,1,1,1,0,1
+1910,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1911,b'p_y' <= 5.08; b'weather' = 0.0; b'orientation' > 14.00; 4.89 < b'p_x' <= 7.47; b'road_shape' = 0.0; b'p_x' <= 7.47; b'car_speed' > 39.12; b'p_y' <= 5.08,2,1,0,1,1,0,0
+1915,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+1917,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'p_x' > 2.51; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'road_shape' = 2.0,3,1,1,1,1,1,1
+1928,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 16.35; b'weather' = 0.0,3,1,0,1,1,1,1
+1929,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,0,1,1,1,0
+1934,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 4.89,3,1,0,1,1,1,0
+1936,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' > -15.00; b'road_shape' = 0.0; -15.00 < b'orientation' <= -1.00; b'p_y' <= 5.08; b'car_speed' <= 39.12; b'weather' = 2.0,2,1,0,1,0,0,0
+1937,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'orientation' > 14.00; b'p_x' > 2.51; b'weather' = 1.0; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1939,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; -1.00 < b'orientation' <= 14.00; b'p_x' > 2.51; b'road_shape' = 0.0; b'p_x' <= 4.89,2,1,0,1,1,0,0
+1941,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,0,1,1,1,1
+1943,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+1947,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 7.67; b'car_speed' > 27.56,2,1,1,1,0,0,0
+1951,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+1956,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 16.35; b'weather' = 0.0,3,1,1,1,1,1,1
+1958,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+1961,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -1.00 < b'orientation' <= 14.00; b'p_x' > 2.51; b'road_shape' = 2.0; b'p_x' <= 4.89; b'p_y' <= 5.08; b'p_x' <= 4.89; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+1965,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,1,1,1,1,1
+1967,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+1970,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+1976,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+1981,b'p_y' <= 2.52; b'p_y' <= 2.52; b'orientation' <= -15.00; b'car_speed' <= 16.35,2,1,1,0,0,1,0
+1986,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'road_shape' = 1.0; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+1988,b'p_x' <= 2.51; b'p_y' <= 5.08; b'orientation' <= -15.00; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0,2,0,1,1,0,1,0
+1992,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 1.0; b'p_y' <= 5.08; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 27.56; b'road_shape' = 1.0,3,1,1,1,1,1,1
+2000,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47,3,1,1,1,0,1,0
+2003,b'p_y' <= 5.08; b'car_speed' <= 27.56; -1.00 < b'orientation' <= 14.00; b'road_shape' = 0.0; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; 16.35 < b'car_speed' <= 27.56; b'p_x' <= 4.89; -1.00 < b'orientation' <= 14.00; b'weather' = 2.0; b'road_shape' = 0.0,3,1,1,1,1,1,1
+2007,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00,2,1,1,1,0,0,0
+2008,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,0,1,0
+2011,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00; b'car_speed' <= 39.12; b'road_shape' = 0.0; b'weather' = 0.0,3,1,1,1,1,1,1
+2016,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,1
+2025,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+2039,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+2040,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+2041,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'weather' = 0.0,3,1,0,1,1,1,0
+2044,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00,3,1,1,1,1,1,1
+2049,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -1.00 < b'orientation' <= 14.00; b'p_x' <= 7.47; b'p_x' <= 2.51,2,1,1,1,0,0,0
+2051,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; -15.00 < b'orientation' <= 14.00; b'road_shape' = 1.0; b'p_x' <= 2.51; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -1.00; b'weather' = 0.0; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+2054,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+2055,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'car_speed' <= 39.12; b'road_shape' = 0.0,3,1,0,1,1,1,0
+2056,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 27.56; b'p_x' <= 4.89; -15.00 < b'orientation' <= 14.00; b'weather' = 2.0; b'road_shape' = 1.0,2,0,1,1,1,1,1
+2058,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+2059,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47; b'weather' = 1.0; b'road_shape' = 1.0,3,1,1,1,1,1,1
+2069,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; b'p_x' > 7.47; b'road_shape' = 0.0; b'orientation' <= -15.00; b'weather' = 0.0; b'car_speed' <= 39.12,2,1,1,1,1,0,1
+2071,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 2.51; b'p_x' <= 4.89; b'p_y' <= 5.08; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0,3,1,1,1,1,1,1
+2076,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,0,0,0
+2077,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+2080,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,1,0,0
+2083,b'p_y' <= 5.08; b'weather' = 0.0; b'p_x' > 7.47; b'orientation' > 14.00; b'car_speed' > 39.12; b'p_y' <= 5.08; b'weather' = 0.0,2,1,1,1,1,0,1
+2084,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 16.35; b'p_x' <= 4.89; b'orientation' <= 14.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,0,1,0
+2086,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 4.89; b'road_shape' = 0.0; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+2090,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > -1.00; b'road_shape' = 2.0; b'p_x' <= 2.51,2,1,1,1,1,0,1
+2091,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,1,0,1
+2092,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,1,1,1
+2094,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 2.51; b'road_shape' = 0.0; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 7.47,3,1,0,1,1,1,1
+2095,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'road_shape' = 0.0; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+2097,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 7.67; b'weather' = 2.0,2,1,1,1,1,0,1
+2100,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'road_shape' = 2.0; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 5.08; b'orientation' <= -15.00; b'car_speed' <= 27.56; b'weather' = 0.0; b'road_shape' = 2.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2105,b'p_y' <= 2.52; b'car_speed' > 39.12; b'p_y' <= 2.52; b'weather' = 0.0,2,1,1,1,1,0,1
+2118,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_x' <= 7.47; b'road_shape' = 2.0,3,1,1,1,0,1,0
+2119,b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_y' <= 2.52; b'car_speed' <= 39.12; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'weather' = 0.0,3,1,1,1,1,1,1
+2120,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+2126,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'road_shape' = 2.0; b'p_x' <= 2.51; b'weather' = 2.0,2,0,0,1,1,1,0
+2128,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2130,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -15.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'weather' = 2.0,3,1,1,1,1,1,1
+2133,b'p_y' <= 2.52; b'p_x' <= 4.89; b'road_shape' = 1.0; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,1,1,1
+2134,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= 14.00; b'car_speed' <= 39.12,3,1,0,1,1,1,1
+2135,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+2136,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; b'p_y' <= 5.08; b'road_shape' = 2.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'road_shape' = 2.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2138,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 39.12; b'road_shape' = 2.0,3,1,1,1,1,1,1
+2139,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,0,1,1,1,0
+2145,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,0,1,1,0,0
+2147,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; 16.35 < b'car_speed' <= 27.56; b'p_x' <= 4.89; -15.00 < b'orientation' <= 14.00; b'road_shape' = 0.0,3,1,1,1,1,1,1
+2152,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,0,1,1,0,0
+2154,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' > 14.00; b'p_x' > 2.51; b'p_x' <= 4.89,2,1,0,1,1,0,1
+2156,b'p_y' <= 2.52; b'p_x' <= 7.47,2,1,1,1,0,0,0
+2158,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'p_x' <= 2.51; b'orientation' <= -1.00; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+2164,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52,2,1,1,1,1,0,1
+2165,b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'weather' = 2.0; b'p_y' <= 5.08; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,1,1,1,1,1
+2167,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,1,1,1
+2171,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12; b'road_shape' = 2.0,3,1,1,1,1,1,1
+2177,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_y' <= 2.52; b'road_shape' = 2.0,2,1,1,1,1,0,1
+2178,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,1
+2188,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+2192,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,0,0,0
+2197,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,1,1,1
+2199,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+2200,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 2.52; b'car_speed' <= 27.56; b'weather' = 0.0; b'orientation' <= 14.00; b'road_shape' = 2.0; b'p_x' <= 7.47,3,1,1,1,0,1,0
+2201,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51,3,1,0,1,1,1,0
+2204,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > -15.00; b'p_x' <= 2.51,2,1,0,1,1,0,0
+2211,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+2213,b'p_y' <= 2.52; b'p_x' <= 4.89; b'road_shape' = 0.0; b'p_y' <= 2.52; b'p_x' <= 4.89; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'weather' = 2.0,3,1,0,1,1,1,0
+2214,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,0,1,0
+2215,b'p_x' <= 4.89; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; 2.51 < b'p_x' <= 4.89; b'weather' = 2.0,2,0,0,1,1,1,1
+2216,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+2219,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'weather' = 0.0; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2220,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -1.00; b'p_x' > 4.89; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+2221,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,0,1,0,0,0
+2224,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 39.12,3,1,1,1,1,1,1
+2227,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00,2,1,0,1,1,0,0
+2228,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 7.47; 2.52 < b'p_y' <= 5.08,2,1,1,1,1,0,1
+2231,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51,3,1,1,1,0,1,0
+2237,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+2241,b'p_x' <= 4.89; b'orientation' <= -15.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'p_x' <= 4.89,2,0,0,1,1,1,1
+2256,b'p_y' <= 2.52; b'p_x' <= 4.89,2,1,1,1,0,0,0
+2258,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'orientation' > -15.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'car_speed' <= 27.56; -15.00 < b'orientation' <= -1.00; b'road_shape' = 1.0,3,1,1,1,0,1,0
+2260,b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'road_shape' = 2.0,3,1,1,1,1,1,1
+2262,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= 14.00; b'p_y' <= 7.67; b'p_y' <= 2.52; b'car_speed' <= 27.56; b'orientation' <= 14.00; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2265,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,3,1,1,1,1,1,1
+2267,b'p_y' <= 2.52; b'orientation' <= 14.00; b'p_y' <= 2.52; b'road_shape' = 2.0; 16.35 < b'car_speed' <= 39.12,2,1,1,1,1,0,1
+2268,b'p_y' <= 2.52; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,0,1,0,0,0
+2273,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' <= 7.47,2,0,0,1,1,1,0
+2274,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'road_shape' = 1.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 1.0,2,1,1,0,0,1,0
+2276,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 2.51; b'car_speed' <= 16.35,3,1,0,1,1,1,0
+2280,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > 14.00; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > 14.00; b'road_shape' = 0.0,2,1,0,0,1,1,1
+2282,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35; b'p_x' <= 7.47,3,1,1,1,1,1,1
+2284,b'p_y' <= 2.52; -15.00 < b'orientation' <= 14.00; b'road_shape' = 2.0; 27.56 < b'car_speed' <= 39.12; b'p_y' <= 2.52; b'weather' = 0.0,2,1,0,1,1,0,1
+2285,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+2290,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,1,1,1,0,1
+2292,b'p_y' <= 2.52; b'p_x' <= 7.47; b'car_speed' > 39.12,2,1,1,1,1,0,1
+2293,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 39.12,3,1,1,1,0,1,0
+2296,b'p_y' <= 2.52; b'orientation' <= -1.00; b'road_shape' = 1.0; b'p_y' <= 2.52; b'p_y' <= 2.52; b'car_speed' <= 16.35; b'orientation' <= -1.00; b'road_shape' = 1.0; b'weather' = 1.0,3,1,1,1,1,1,1
+2301,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' > 7.47; b'orientation' <= -15.00; b'p_y' > 2.52; b'road_shape' = 2.0; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' > 7.47,3,1,0,1,1,1,1
+2307,b'p_x' <= 4.89; b'p_y' <= 5.08; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,2,0,0,1,1,1,0
+2310,b'p_y' <= 2.52; b'p_x' <= 4.89; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,1,1,1,1,1
+2311,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 39.12; 4.89 < b'p_x' <= 7.47; b'orientation' > -1.00; b'road_shape' = 2.0; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,1,0,1
+2313,b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+2315,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'orientation' > 14.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 2.51; b'weather' = 0.0; b'orientation' > 14.00,3,1,0,1,0,1,0
+2323,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 16.35,3,1,0,1,0,1,0
+2326,b'p_y' <= 2.52; b'orientation' <= 14.00; 27.56 < b'car_speed' <= 39.12; b'p_y' <= 5.08; b'road_shape' = 2.0,2,1,0,1,0,0,0
+2327,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'weather' = 0.0; b'p_x' <= 4.89,2,1,1,1,0,0,0
+2330,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47; b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 39.12; b'p_x' <= 7.47; b'road_shape' = 1.0,3,1,1,1,1,1,1
+2342,b'p_y' <= 2.52; b'p_x' <= 4.89; b'orientation' <= -1.00; b'p_y' <= 2.52; b'orientation' <= -1.00; b'p_x' <= 4.89; b'car_speed' <= 27.56,3,1,0,1,0,1,0
+2348,b'orientation' <= -1.00; b'road_shape' = 2.0; b'car_speed' <= 27.56; b'p_y' <= 5.08; b'car_speed' <= 16.35; b'orientation' <= -15.00; b'road_shape' = 2.0; b'p_x' > 2.51,2,0,1,1,1,1,1
+2349,b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'p_x' <= 4.89,2,0,1,1,1,1,1
+2350,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'weather' = 1.0; b'orientation' > -15.00; b'p_x' > 4.89; b'road_shape' = 1.0; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+2351,b'p_y' <= 5.08; b'weather' = 0.0; b'road_shape' = 1.0; b'orientation' > -1.00; b'p_x' <= 2.51,2,1,1,1,0,0,0
+2352,b'p_y' <= 5.08; b'car_speed' <= 27.56; b'orientation' > -15.00; b'weather' = 1.0; b'road_shape' = 2.0; b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'road_shape' = 2.0,3,1,1,1,0,1,0
+2354,b'p_y' <= 2.52; b'p_x' <= 2.51,2,1,0,1,1,0,0
+2356,b'p_y' <= 2.52; b'orientation' <= -15.00; b'road_shape' = 2.0; b'car_speed' > 16.35; b'p_y' <= 5.08,2,1,0,1,0,0,0
+2362,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 2.51; b'car_speed' <= 16.35,3,1,1,1,0,1,0
+2363,b'p_y' <= 2.52; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'p_y' <= 7.67,2,1,0,1,1,0,0
+2364,b'p_y' <= 2.52; b'p_x' <= 4.89; b'road_shape' = 1.0,2,1,0,1,1,0,0
+2367,b'p_y' <= 2.52; b'p_x' <= 7.47; b'orientation' <= -15.00; b'p_y' <= 2.52; b'orientation' <= -15.00; b'weather' = 0.0; b'p_x' <= 7.47; b'road_shape' = 1.0,3,1,1,1,0,1,0
+2368,b'p_y' <= 2.52; b'orientation' <= -15.00; b'p_x' <= 7.47,2,1,1,1,1,0,1
+2371,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; b'p_x' > 4.89; b'orientation' > -15.00; b'road_shape' = 2.0; b'p_x' <= 7.47; b'orientation' <= -1.00; b'p_y' <= 5.08; b'orientation' <= -1.00; b'car_speed' <= 27.56; b'road_shape' = 2.0; b'weather' = 0.0; 4.89 < b'p_x' <= 7.47,3,1,0,1,1,1,0
+2372,b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; b'orientation' <= -15.00; b'road_shape' = 2.0; b'car_speed' <= 39.12,2,0,0,1,1,1,0
+2375,b'p_y' <= 5.08; b'car_speed' <= 16.35; b'p_x' <= 7.47; b'road_shape' = 0.0; b'orientation' > -15.00; b'p_x' <= 2.51; b'p_y' <= 5.08; b'car_speed' <= 16.35; -15.00 < b'orientation' <= -1.00; b'p_x' <= 2.51; b'weather' = 2.0,3,1,0,1,1,1,1
+2376,b'p_x' <= 2.51; b'p_y' <= 5.08; b'p_x' <= 2.51; -15.00 < b'orientation' <= -1.00; b'car_speed' <= 27.56; b'weather' = 2.0,2,0,0,1,1,1,0
+2377,b'p_y' <= 5.08; b'weather' = 0.0; b'car_speed' <= 27.56; 4.89 < b'p_x' <= 7.47; b'orientation' > -15.00; b'orientation' <= -1.00; b'p_x' <= 7.47,2,1,0,1,1,0,0
+2390,b'p_x' <= 4.89; b'p_y' <= 5.08; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,2,0,1,1,1,1,1
+2393,b'p_y' <= 5.08; b'car_speed' <= 39.12; b'p_x' > 4.89; b'orientation' > -1.00; b'weather' = 1.0; b'road_shape' = 1.0; b'p_x' <= 7.47; b'orientation' <= 14.00,2,1,1,1,0,0,0
+2394,b'p_y' <= 5.08; b'car_speed' <= 16.35; 4.89 < b'p_x' <= 7.47; b'orientation' > -1.00; b'p_x' <= 7.47; b'p_y' <= 5.08,2,1,1,1,0,0,0
+2395,b'p_y' <= 2.52; b'p_x' <= 2.51; b'p_y' <= 2.52; b'p_x' <= 2.51; b'car_speed' <= 27.56; b'orientation' <= 14.00,3,1,1,1,0,1,0

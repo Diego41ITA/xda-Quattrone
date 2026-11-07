@@ -21,8 +21,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 BUILDER_DIR = PROJECT_ROOT / "MDP_Dataset_Builder"
 
 # These are the only two experiment switches that should normally be edited.
-SELECTED_DATASET = "balanced_dataset"
-WIP_MODE = "only_true"
+SELECTED_DATASET = "drive"
+WIP_MODE = "hierarchical"
 
 _DATASET_ALIASES = {
     "drive2": "drivev2",

@@ -6,157 +6,63 @@ INDEX_TO_RUN = None  # 0
 TOTAL_TO_RUN = None  # 1
 PATH_TO_DATASET = None  # "./starting_combinations.npy"
 
-SS_VARIABLES = {
-    "formation": { "domain": int, "range": [0, 1], },
-    "flying_speed": { "domain": float, "range": [5., 50.], },
-    "countermeasure": { "domain": int, "range": [0, 1], },
-    "weather": { "domain": int, "range": [1, 4], },
-    "day_time": { "domain": int, "range": [0, 23], },
-    "threat_range": { "domain": float, "range": [1000.0, 40000.0], },
-    "#threats": { "domain": int, "range": [1, 100], }
-}
 
+SS_VARIABLES = {
+    "car_speed": {"domain": float, "range": [5.0, 50.0]},
+    "p_x": {"domain": float, "range": [0.0, 10.0]},
+    "p_y": {"domain": float, "range": [0.0, 10.0]},
+    "orientation": {"domain": int, "range": [-30, 30]},
+    "weather": {"domain": int, "range": [0, 2]},
+    "road_shape": {"domain": int, "range": [0, 2]},
+}
 
 # Constraints definition
 
 IDEAL_SPOTS = {
     "S0": {
-        "sTrt": [0.8, 0.05, 0.15]
+        "a": [0.001, 0.999]
     },
-    "S10": {
-        "sTrt": [0.44, 0.44, 0.02, 0.1]
-    },
-    "S20": {
-        "sTrt": [0.95, 0.005, 0.045],
+    "S2": {
+        "b": [0.98, 0.015, 0.005],
     }
 }
 
-#constraints = compute_constraints([.035, .04, .045, .055], IDEAL_SPOTS) #constraintsv1
-#constraints = compute_constraints([0.025, 0.03, 0.035, 0.045], IDEAL_SPOTS) #constraintsv2
-constraints = compute_constraints([0.02, 0.025, 0.03, 0.04], IDEAL_SPOTS) #constraintsv3
-
+#constraints = compute_constraints([.025, .03, .04, .045], IDEAL_SPOTS)
+#constraints = compute_constraints([.001, .002], IDEAL_SPOTS) #constraints v1
+# constraints = compute_constraints([0.0008, 0.0015], IDEAL_SPOTS) #constraintsv2
+constraints = compute_constraints([0.0005, 0.001], IDEAL_SPOTS) #constraintsv3
 CONSTRAINTS = [
     # SINGLE CONSTRAINTS
     {
         "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
+            "a": constraints["S0"]["a"][0]
         }
     },
     {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        }
-    },
-    {
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0],
-        }
-    },
-    # DUAL CONSTRAINTS
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        }
-    },
-    {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0]
-        }
-    },
-    {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][3]
-        }
-    },
-    # TRIPLE CONSTRAINTS
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0]
+        "S2": {
+            "b": constraints["S2"]["b"][1]
         }
     },
     {
         "S0": {
-            "sTrt": constraints["S0"]["sTrt"][1]
+            "a": constraints["S0"]["a"][1]
         },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0],
+        "S2": {
+            "b": constraints["S2"]["b"][1]
         }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][1],
-        }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][1]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][1],
-        }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][2]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][2],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][2],
-        }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][3]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][3],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][3],
-        }
-    },
+    }
 ]
 
 MINIMAL_CONSTRAINTS = {
     "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
+        "a": constraints["S0"]["a"][0]
     },
-    "S10": {
-        "sTrt": constraints["S10"]["sTrt"][0],
-    },
-    "S20": {
-        "sTrt": constraints["S20"]["sTrt"][0],
+    "S2": {
+        "b": constraints["S2"]["b"][1]
     }
 }
+
+# Load arguments from cli
 
 all_args = argparse.ArgumentParser()
 
@@ -188,13 +94,13 @@ if args.get("path-to-dataset") is not None:
 
 # _template = {
 #     "S0": {
-#         "sTrt": constraints["S0"]["sTrt"][0]
+#         "a": constraints["S0"]["a"][0]
 #     },
-#     "S7": {
-#         "sTrt": constraints["S7"]["sTrt"][0]
+#     "S5": {
+#         "g": constraints["S5"]["g"][0]
 #     },
-#     "S14": {
-#         "sTrt": constraints["S14"]["sTrt"][0],
-#         "sTrt": constraints["S14"]["sTrt"][0]
+#     "S10": {
+#         "l": constraints["S10"]["l"][0],
+#         "m": constraints["S10"]["m"][0]
 #     }
 # }

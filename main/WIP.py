@@ -385,20 +385,38 @@ class WIPPlanner:
         print(f"{self.anchor_rules_path} saved successfully!")
 
         # b) Anchors explanations
-        with open(self.anchor_explanations_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["n_satisfied_reqs", "satisfied_reqs"] + feature_names)
-            for idx, exp in zip(selected_samples, self.explanations):
-                n_satisfied = int(pred_matrix[idx].sum())
-                satisfied = [reqNames[i] for i, val in enumerate(pred_matrix[idx]) if val == 1]
-                row = [n_satisfied, ";".join(satisfied)]
-                for feat in feature_names:
-                    row.append(str(exp[feat]))
-                writer.writerow(row)
+        self._write_anchor_explanations_csv(
+            self.anchor_explanations_path,
+            feature_names,
+            reqNames,
+            selected_samples,
+            pred_matrix,
+            self.explanations,
+        )
 
         print(
             f"{self.anchor_explanations_path} saved successfully with {len(self.explanations)} samples!"
         )
+
+    @staticmethod
+    def _write_anchor_explanations_csv(
+        output_path,
+        feature_names,
+        req_names,
+        selected_samples,
+        predictions,
+        explanations,
+    ):
+        with open(output_path, "w", newline="") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["n_satisfied_reqs", "satisfied_reqs", *feature_names])
+            for idx, exp in zip(selected_samples, explanations):
+                prediction = predictions[idx]
+                n_satisfied = int(np.sum(prediction))
+                satisfied = [req_names[i] for i, value in enumerate(prediction) if value == 1]
+                row = [n_satisfied, ";".join(satisfied)]
+                row.extend(str(exp[feature]) for feature in feature_names)
+                writer.writerow(row)
 
     def __load_anchor_explanations(self, csv_path, min_satisfied_reqs):
         """
