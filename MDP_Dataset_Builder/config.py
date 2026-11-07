@@ -1,5 +1,5 @@
-from utils.constraints_builder import compute_constraints
 import argparse
+from RescueRobot.robot import SemanticSpaceVariable
 
 MAX_SAMPLES = None  # 1000
 INDEX_TO_RUN = None  # 0
@@ -7,156 +7,168 @@ TOTAL_TO_RUN = None  # 1
 PATH_TO_DATASET = None  # "./starting_combinations.npy"
 
 SS_VARIABLES = {
-    "formation": { "domain": int, "range": [0, 1], },
-    "flying_speed": { "domain": float, "range": [5., 50.], },
-    "countermeasure": { "domain": int, "range": [0, 1], },
-    "weather": { "domain": int, "range": [1, 4], },
-    "day_time": { "domain": int, "range": [0, 23], },
-    "threat_range": { "domain": float, "range": [1000.0, 40000.0], },
-    "#threats": { "domain": int, "range": [1, 100], }
+    "cruise speed": {"domain": float, "range": [0, 100]},
+    "image resolution": {"domain": float, "range": [0, 100]},
+    "illuminance": {"domain": float, "range": [0, 100]},
+    "controls responsiveness": {"domain": float, "range": [0, 100]},
+    "power": {"domain": int, "range": [0, 100]},
+    "smoke intensity": {"domain": float, "range": [0, 100]},
+    "obstacle size": {"domain": float, "range": [0, 100]},
+    "obstacle distance": {"domain": float, "range": [0, 100]},
+    "firm obstacle": {"domain": int, "range": [0, 1]},
 }
 
-
-# Constraints definition
-
-IDEAL_SPOTS = {
+CONSTRAINT_EXAMPLE = {
     "S0": {
-        "sTrt": [0.8, 0.05, 0.15]
+        "a": [[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]]
+    },
+    "S5": {
+        "g": [[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]]
     },
     "S10": {
-        "sTrt": [0.44, 0.44, 0.02, 0.1]
-    },
-    "S20": {
-        "sTrt": [0.95, 0.005, 0.045],
+        "l": [[0.0, 1.0], [0.0, 1.0]],
+        "m": [[0.0, 1.0], [0.0, 1.0]],
     }
 }
 
-#constraints = compute_constraints([.035, .04, .045, .055], IDEAL_SPOTS) #constraintsv1
-#constraints = compute_constraints([0.025, 0.03, 0.035, 0.045], IDEAL_SPOTS) #constraintsv2
-constraints = compute_constraints([0.02, 0.025, 0.03, 0.04], IDEAL_SPOTS) #constraintsv3
+low_missclassification = {
+    "S0": {
+        "a": [[0.0, 1.0], [0.0, 1.0], [0.0, 0.15]],
+        "b": [[0.0, 0.15], [0.0, 1.0]]
+    }
+}
 
-CONSTRAINTS = [
-    # SINGLE CONSTRAINTS
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        }
+low_contact = {
+    "S0": {
+        "a": [[0.0, 0.05], [0.0, 1.0], [0.0, 1.0]]
     },
-    {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        }
+    "S5": {
+        "g": [[0.0, 0.05], [0.0, 1.0], [0.0, 1.0]]
     },
-    {
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0],
-        }
+    "S6": {
+        "h": [[0.0, 0.05], [0.0, 1.0]]
+    }
+}
+
+low_crash = {
+    "S10": {
+        "l": [[0.0, 1.0], [0.0, 0.1]],
+        "m": [[0.0, 0.1], [0.0, 1.0]]
+    }
+}
+
+safe = {
+    "S5": {
+        "g": [[0.0, 1.0], [0.0, 0.15], [0.0, 1.0]]
     },
-    # DUAL CONSTRAINTS
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        }
+    "S8": {
+        "j": [[0.0, 1.0], [0.0, 0.15]]
+    }
+}
+
+test = {
+    "S6": {
+        "h": [[0.0, 0.03], [0.0, 1.0]]
+    }
+}
+
+low_missclassification_v2 = {
+    "S0": {
+        "a": [[0.0, 0.9], [0.0, 0.9], [0.0, 0.12]],
+        "b": [[0.0, 0.12], [0.0, 0.9]]
+    }
+}
+
+low_contact_v2 = {
+    "S0": {
+        "a": [[0.0, 0.04], [0.0, 0.9], [0.0, 0.9]]
     },
-    {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0]
-        }
+    "S5": {
+        "g": [[0.0, 0.04], [0.0, 0.9], [0.0, 0.9]]
     },
-    {
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][3]
-        }
+    "S6": {
+        "h": [[0.0, 0.04], [0.0, 0.9]]
+    }
+}
+
+low_crash_v2 = {
+    "S10": {
+        "l": [[0.0, 0.9], [0.0, 0.08]],
+        "m": [[0.0, 0.08], [0.0, 0.9]]
+    }
+}
+
+safe_v2 = {
+    "S5": {
+        "g": [[0.0, 0.9], [0.0, 0.12], [0.0, 0.9]]
     },
-    # TRIPLE CONSTRAINTS
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][0]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0]
-        }
+    "S8": {
+        "j": [[0.0, 0.9], [0.0, 0.12]]
+    }
+}
+
+low_missclassification_v3 = {
+    "S0": {
+        "a": [[0.0, 0.85], [0.0, 0.85], [0.0, 0.1]],
+        "b": [[0.0, 0.1], [0.0, 0.85]]
+    }
+}
+
+low_contact_v3 = {
+    "S0": {
+        "a": [[0.0, 0.03], [0.0, 0.85], [0.0, 0.85]]
     },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][1]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][0],
-        }
+    "S5": {
+        "g": [[0.0, 0.03], [0.0, 0.85], [0.0, 0.85]]
     },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1]
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][1],
-        }
+    "S6": {
+        "h": [[0.0, 0.03], [0.0, 0.85]]
+    }
+}
+
+low_crash_v3 = {
+    "S10": {
+        "l": [[0.0, 0.85], [0.0, 0.06]],
+        "m": [[0.0, 0.06], [0.0, 0.85]]
+    }
+}
+
+safe_v3 = {
+    "S5": {
+        "g": [[0.0, 0.85], [0.0, 0.1], [0.0, 0.85]]
     },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][1]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][1],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][1],
-        }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][2]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][2],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][2],
-        }
-    },
-    {
-        "S0": {
-            "sTrt": constraints["S0"]["sTrt"][3]
-        },
-        "S10": {
-            "sTrt": constraints["S10"]["sTrt"][3],
-        },
-        "S20": {
-            "sTrt": constraints["S20"]["sTrt"][3],
-        }
-    },
+    "S8": {
+        "j": [[0.0, 0.85], [0.0, 0.1]]
+    }
+}
+
+constraints_v3 = [
+    #test,
+    low_missclassification_v3,
+    low_contact_v3,
+    low_crash_v3,
+    safe_v3
 ]
 
-MINIMAL_CONSTRAINTS = {
-    "S0": {
-            "sTrt": constraints["S0"]["sTrt"][0]
-    },
-    "S10": {
-        "sTrt": constraints["S10"]["sTrt"][0],
-    },
-    "S20": {
-        "sTrt": constraints["S20"]["sTrt"][0],
-    }
-}
+constraints_v2 = [
+    #test,
+    low_missclassification_v2,
+    low_contact_v2,
+    low_crash_v2,
+    safe_v2
+]
+
+constraints_v1 = [
+    #test,
+    low_missclassification_v3,
+    low_contact_v3,
+    low_crash_v3,
+    safe_v3
+]
+
+CONSTRAINTS = constraints_v3
+
+# Load arguments from cli
 
 all_args = argparse.ArgumentParser()
 
@@ -185,16 +197,3 @@ if args.get("total_executions") is not None:
 if args.get("path-to-dataset") is not None:
     print(f"Using dataset: {args.get('path-to-dataset')}")
     PATH_TO_DATASET = args.get("path-to-dataset")
-
-# _template = {
-#     "S0": {
-#         "sTrt": constraints["S0"]["sTrt"][0]
-#     },
-#     "S7": {
-#         "sTrt": constraints["S7"]["sTrt"][0]
-#     },
-#     "S14": {
-#         "sTrt": constraints["S14"]["sTrt"][0],
-#         "sTrt": constraints["S14"]["sTrt"][0]
-#     }
-# }
